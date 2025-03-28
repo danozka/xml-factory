@@ -5,7 +5,7 @@ from pathlib import Path
 import typer
 from typing_extensions import Annotated
 
-from xml_generator import XmlGenerator
+from xml_factory import XmlFactory
 
 
 def main(
@@ -42,14 +42,14 @@ def main(
         datefmt='%d-%m-%Y %H:%M:%S',
         level=log_level
     )
-    xml_generator: XmlGenerator = XmlGenerator(
+    xml_factory: XmlFactory = XmlFactory(
         force_min_occurs,
         force_max_occurs,
         force_default_value,
         force_min_value,
         force_max_value
     )
-    exit_code: int = xml_generator.generate_xml(xsd_path=xsd, xml_path=xml, root_element_name=root)
+    exit_code: int = xml_factory.generate_xml(xsd_path=xsd, xml_path=xml, root_element_name=root)
     sys.exit(exit_code)
 
 

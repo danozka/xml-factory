@@ -1,7 +1,7 @@
 import random
 from string import ascii_letters, digits
 
-from xml_generator.tag_white_space_policy import TagWhiteSpacePolicy
+from xml_factory.tag_white_space_policy import TagWhiteSpacePolicy
 
 
 class TagRandomStringGenerator:
