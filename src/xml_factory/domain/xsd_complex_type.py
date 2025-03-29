@@ -1,5 +1,5 @@
-from typing import Dict, Optional, Union
 from dataclasses import dataclass
+from typing import Dict, Optional, Union
 
 from xml_factory.domain.xsd_all import XsdAll
 from xml_factory.domain.xsd_attribute import XsdAttribute

@@ -9,7 +9,7 @@ from xml_factory.domain.xsd_simple_type import XsdSimpleType
 @dataclass
 class XsdElement(XsdComponent):
     """Element declaration"""
-    type: Union[str, XsdSimpleType, XsdComplexType]
+    type: Optional[Union[str, XsdSimpleType, XsdComplexType]] = None
     min_occurs: int = 1
     max_occurs: Union[int, str] = 1
     nillable: bool = False
