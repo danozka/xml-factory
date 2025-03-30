@@ -8,7 +8,6 @@ from xmlschema.validators import (
     XsdComplexType as XmlschemaComplexType,
     XsdFacet as XmlschemaFacet,
     XsdFractionDigitsFacet as XmlschemaFractionDigitsFacet,
-    XsdElement as XmlschemaElement,
     XsdList as XmlschemaList,
     XsdMaxExclusiveFacet as XmlschemaMaxExclusiveFacet,
     XsdMaxInclusiveFacet as XmlschemaMaxInclusiveFacet,
@@ -28,7 +27,6 @@ from xml_factory.domain.xsd_attribute_use import XsdAttributeUse
 from xml_factory.domain.xsd_attribute_group import XsdAttributeGroup
 from xml_factory.domain.xsd_base_type import XsdBaseType
 from xml_factory.domain.xsd_complex_type import XsdComplexType
-from xml_factory.domain.xsd_element import XsdElement
 from xml_factory.domain.xsd_form_default import XsdFormDefault
 from xml_factory.domain.xsd_group import XsdGroup
 from xml_factory.domain.xsd_group_type import XsdGroupType
@@ -51,7 +49,7 @@ class XmlschemaAdapter:
             for xmlschema_simple_type in xmlschema_schema.simple_types
         }
         complex_types: dict[str, XsdComplexType] = {
-            xmlschema_complex_type.name: self.adapt_xmlschema_complex_types(xmlschema_complex_type)
+            xmlschema_complex_type.name: self.adapt_xmlschema_complex_type(xmlschema_complex_type)
             for xmlschema_complex_type in xmlschema_schema.complex_types
         }
         result: XsdSchema = XsdSchema(
@@ -157,11 +155,10 @@ class XmlschemaAdapter:
             raise ValueError(f'Unknown simple type {xmlschema_simple_type}')
         return result
 
-    def adapt_xmlschema_complex_types(self, xmlschema_complex_type: XmlschemaComplexType) -> XsdComplexType:
+    def adapt_xmlschema_complex_type(self, xmlschema_complex_type: XmlschemaComplexType) -> XsdComplexType:
         self._log.debug(f'Adapting complex type {xmlschema_complex_type}...')
         result = XsdComplexType(
-            name=xmlschema_complex_type.name,
-            abstract=xmlschema_complex_type.abstract,
+            name=xmlschema_complex_type.local_name,
             mixed=xmlschema_complex_type.mixed,
             content_model=...,
             attributes=...,
@@ -169,21 +166,4 @@ class XmlschemaAdapter:
             derived_by=...
         )
         self._log.debug(f'Complex type {xmlschema_complex_type} adapted')
-        return result
-
-    def _adapt_xmlschema_elements(self, xmlschema_schema: XmlschemaSchema) -> dict[str, XsdElement]:
-        result: dict[str, XsdElement] = {}
-        xmlschema_element_name: str
-        xmlschema_element: XmlschemaElement
-        for xmlschema_element_name, xmlschema_element in xmlschema_schema.elements.items():
-            result[xmlschema_element_name] = XsdElement(
-                name=xmlschema_element.name,
-                type=...,
-                min_occurs=xmlschema_element.min_occurs,
-                max_occurs=xmlschema_element.max_occurs,
-                nillable=xmlschema_element.nillable,
-                default=xmlschema_element.default,
-                fixed=xmlschema_element.fixed,
-                substitution_group=xmlschema_element.substitution_group
-            )
         return result

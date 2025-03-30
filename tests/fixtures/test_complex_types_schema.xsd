@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Simple type definition -->
+  <xs:simpleType name="priorityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="low"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="high"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Complex type with simple content -->
+  <xs:complexType name="simpleContentType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="language" type="xs:language" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Complex type with element-only content -->
+  <xs:complexType name="elementOnlyType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="price" type="xs:decimal"/>
+      <xs:element name="quantity" type="xs:integer" default="1"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+  </xs:complexType>
+
+  <!-- Complex type with mixed content -->
+  <xs:complexType name="mixedContentType" mixed="true">
+    <xs:sequence>
+      <xs:element name="emphasis" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="footnote" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Complex type with choice content model -->
+  <xs:complexType name="choiceContentType">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="text" type="xs:string"/>
+      <xs:element name="image" type="xs:anyURI"/>
+      <xs:element name="video" type="xs:anyURI"/>
+    </xs:choice>
+    <xs:attribute name="format" type="xs:string"/>
+  </xs:complexType>
+
+  <!-- Complex type with all content model -->
+  <xs:complexType name="allContentType">
+    <xs:all>
+      <xs:element name="firstName" type="xs:string"/>
+      <xs:element name="lastName" type="xs:string"/>
+      <xs:element name="age" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+
+  <!-- Complex type with nested complex types -->
+  <xs:complexType name="nestedComplexType">
+    <xs:sequence>
+      <xs:element name="header" type="simpleContentType"/>
+      <xs:element name="body">
+        <xs:complexType>
+          <xs:choice>
+            <xs:element name="paragraph" type="mixedContentType" maxOccurs="unbounded"/>
+            <xs:element name="list" type="listType"/>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="footer" type="simpleContentType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:decimal" use="required"/>
+  </xs:complexType>
+
+  <!-- List type definition -->
+  <xs:complexType name="listType">
+    <xs:sequence>
+      <xs:element name="item" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="priority" type="priorityType"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Root element using various complex types -->
+  <xs:element name="catalog">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="product" type="elementOnlyType" maxOccurs="unbounded"/>
+        <xs:element name="document" type="nestedComplexType" minOccurs="0"/>
+        <xs:element name="person" type="allContentType" minOccurs="0"/>
+        <xs:element name="media" type="choiceContentType" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="lastUpdated" type="xs:dateTime" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

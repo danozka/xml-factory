@@ -9,7 +9,6 @@ from xml_factory.domain.xsd_group import XsdGroup
 @dataclass
 class XsdComplexType(XsdComponent):
     """Element that can contain attributes and child elements"""
-    abstract: bool = False
     mixed: bool = False
     content_model: Optional[XsdGroup] = None
     attributes: dict[str, XsdAttribute] = field(default_factory=dict)
