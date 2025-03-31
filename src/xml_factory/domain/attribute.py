@@ -9,7 +9,7 @@ from xml_factory.domain.xsd_simple_type import XsdSimpleType
 @dataclass
 class XsdAttribute(XsdComponent):
     """Attribute declaration"""
-    type: Optional[Union[str | XsdSimpleType]]= None
+    type: Optional[Union[str | XsdSimpleType]] = None
     use: XsdAttributeUse = XsdAttributeUse.optional
     default: Optional[str] = None
     fixed: Optional[str] = None

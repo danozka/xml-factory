@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from xml_factory.domain.xsd_component import XsdComponent
 from xml_factory.domain.xsd_element import XsdElement
@@ -13,4 +13,3 @@ class XsdGroup(XsdComponent):
     min_occurs: int = 1
     max_occurs: Optional[int] = 1
     type: Optional[XsdGroupType] = None
-

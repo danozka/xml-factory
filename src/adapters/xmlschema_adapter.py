@@ -1,5 +1,6 @@
 import logging
 from logging import Logger
+from typing import Type
 
 from xmlschema.validators import (
     XMLSchemaBase as XmlschemaSchema,
@@ -8,6 +9,7 @@ from xmlschema.validators import (
     XsdComplexType as XmlschemaComplexType,
     XsdFacet as XmlschemaFacet,
     XsdFractionDigitsFacet as XmlschemaFractionDigitsFacet,
+    XsdGroup as XmlschemaGroup,
     XsdList as XmlschemaList,
     XsdMaxExclusiveFacet as XmlschemaMaxExclusiveFacet,
     XsdMaxInclusiveFacet as XmlschemaMaxInclusiveFacet,
@@ -22,18 +24,21 @@ from xmlschema.validators import (
     XsdWhiteSpaceFacet as XmlschemaWhiteSpaceFacet
 )
 
+from xml_factory.domain.xsd_all import XsdAll
 from xml_factory.domain.xsd_attribute import XsdAttribute
 from xml_factory.domain.xsd_attribute_use import XsdAttributeUse
 from xml_factory.domain.xsd_attribute_group import XsdAttributeGroup
 from xml_factory.domain.xsd_base_type import XsdBaseType
+from xml_factory.domain.xsd_choice import XsdChoice
 from xml_factory.domain.xsd_complex_type import XsdComplexType
+from xml_factory.domain.xsd_complex_type_derivation_type import XsdComplexTypeDerivationType
 from xml_factory.domain.xsd_form_default import XsdFormDefault
 from xml_factory.domain.xsd_group import XsdGroup
-from xml_factory.domain.xsd_group_type import XsdGroupType
 from xml_factory.domain.xsd_list import XsdList
 from xml_factory.domain.xsd_notation import XsdNotation
 from xml_factory.domain.xsd_restriction import XsdRestriction
 from xml_factory.domain.xsd_schema import XsdSchema
+from xml_factory.domain.xsd_sequence import XsdSequence
 from xml_factory.domain.xsd_simple_type import XsdSimpleType
 from xml_factory.domain.xsd_union import XsdUnion
 from xml_factory.domain.xsd_white_space_restriction import XsdWhiteSpaceRestriction
@@ -157,13 +162,32 @@ class XmlschemaAdapter:
 
     def adapt_xmlschema_complex_type(self, xmlschema_complex_type: XmlschemaComplexType) -> XsdComplexType:
         self._log.debug(f'Adapting complex type {xmlschema_complex_type}...')
-        result = XsdComplexType(
+        content: XsdSimpleType | XsdGroup | None = None
+        if isinstance(xmlschema_complex_type.content, XmlschemaSimpleType):
+            content: XsdSimpleType = self.adapt_xmlschema_simple_type(xmlschema_complex_type.content)
+        elif isinstance(xmlschema_complex_type.content, XmlschemaGroup):
+            if xmlschema_complex_type.content.model == 'sequence':
+                content_class = XsdAll
+            content: XsdAll = XsdAll(
+                name=xmlschema_complex_type.content.local_name,
+                elements=[
+
+                ],
+                min_occurs=xmlschema_complex_type.content.min_occurs,
+                max_occurs=xmlschema_complex_type.content.max_occurs
+            )
+        else:
+            raise ValueError(f'Unknown complex type content {xmlschema_complex_type.content}')
+        result: XsdComplexType = XsdComplexType(
             name=xmlschema_complex_type.local_name,
             mixed=xmlschema_complex_type.mixed,
-            content_model=...,
-            attributes=...,
-            base_type=...,
-            derived_by=...
+            content=content,
+            attributes={},
+            derived_by=(
+                XsdComplexTypeDerivationType(xmlschema_complex_type.derivation)
+                if xmlschema_complex_type.derivation is not None
+                else None
+            )
         )
         self._log.debug(f'Complex type {xmlschema_complex_type} adapted')
         return result
