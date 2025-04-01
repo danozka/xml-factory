@@ -19,6 +19,18 @@
     </xs:simpleContent>
   </xs:complexType>
 
+  <!-- Complex type with nested sequence and choice content -->
+  <xs:complexType name="testType">
+    <xs:sequence>
+      <xs:element name="id" type="xs:integer"/>
+      <xs:choice>
+        <xs:element name="email" type="xs:string"/>
+        <xs:element name="phone" type="xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="price" type="xs:decimal" use="required"/>
+  </xs:complexType>
+
   <!-- Complex type with element-only content -->
   <xs:complexType name="elementOnlyType">
     <xs:sequence>

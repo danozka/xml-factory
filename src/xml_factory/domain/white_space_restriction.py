@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class XsdWhiteSpaceRestriction(StrEnum):
+class WhiteSpaceRestriction(StrEnum):
     collapse = 'collapse'
     preserve = 'preserve'
     replace = 'replace'

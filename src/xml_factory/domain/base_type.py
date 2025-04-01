@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class XsdBaseType(StrEnum):
+class BaseType(StrEnum):
     date_time = 'dateTime'
     time = 'time'
     date = 'date'

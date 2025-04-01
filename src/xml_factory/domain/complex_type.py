@@ -1,17 +1,15 @@
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
-from xml_factory.domain.xsd_attribute import XsdAttribute
-from xml_factory.domain.xsd_complex_type_derivation_type import XsdComplexTypeDerivationType
-from xml_factory.domain.xsd_component import XsdComponent
-from xml_factory.domain.xsd_group import XsdGroup
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
+from xml_factory.domain.attribute import Attribute
+from xml_factory.domain.complex_derivation_type import ComplexDerivationType
+from xml_factory.domain.component import Component
+from xml_factory.domain.group import Group
+from xml_factory.domain.simple_type import SimpleType
 
 
 @dataclass
-class XsdComplexType(XsdComponent):
-    """Element that can contain attributes and child elements"""
+class ComplexType(Component):
     mixed: bool = False
-    content: Optional[Union[XsdSimpleType, XsdGroup]] = None
-    attributes: dict[str, XsdAttribute] = field(default_factory=dict)
-    derived_by: Optional[XsdComplexTypeDerivationType] = None
+    content: SimpleType | Group | None = None
+    attributes: dict[str, Attribute] = field(default_factory=dict)
+    derived_by: ComplexDerivationType | None = None

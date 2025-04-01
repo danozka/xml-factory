@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from xml_factory.domain.xsd_component import XsdComponent
+from xml_factory.domain.component import Component
 
 
 @dataclass
-class XsdSimpleType(XsdComponent):
+class SimpleType(Component):
     pass

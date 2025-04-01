@@ -1,23 +1,21 @@
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
-from xml_factory.domain.xsd_base_type import XsdBaseType
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
-from xml_factory.domain.xsd_white_space_restriction import XsdWhiteSpaceRestriction
+from xml_factory.domain.base_type import BaseType
+from xml_factory.domain.simple_type import SimpleType
+from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
 
 
 @dataclass
-class XsdRestriction(XsdSimpleType):
-    """Constraint for simple types"""
-    base: Optional[Union[XsdBaseType, XsdSimpleType]] = field(default=None)
-    enumeration: Optional[list[str]] = field(default=None, repr=False)
-    pattern: Optional[str] = field(default=None, repr=False)
-    min_length: Optional[int] = field(default=None, repr=False)
-    max_length: Optional[int] = field(default=None, repr=False)
-    min_inclusive: Optional[Union[float, int]] = field(default=None, repr=False)
-    max_inclusive: Optional[Union[float, int]] = field(default=None, repr=False)
-    min_exclusive: Optional[Union[float, int]] = field(default=None, repr=False)
-    max_exclusive: Optional[Union[float, int]] = field(default=None, repr=False)
-    total_digits: Optional[int] = field(default=None, repr=False)
-    fraction_digits: Optional[int] = field(default=None, repr=False)
-    white_space: Optional[XsdWhiteSpaceRestriction] = field(default=None, repr=False)
+class Restriction(SimpleType):
+    base: BaseType | SimpleType | None = field(default=None)
+    enumeration: list[str] | None = field(default=None, repr=False)
+    pattern: str | None = field(default=None, repr=False)
+    min_length: int | None = field(default=None, repr=False)
+    max_length: int | None = field(default=None, repr=False)
+    min_inclusive: float | int | None = field(default=None, repr=False)
+    max_inclusive: float | int | None = field(default=None, repr=False)
+    min_exclusive: float | int | None = field(default=None, repr=False)
+    max_exclusive: float | int | None = field(default=None, repr=False)
+    total_digits: int | None = field(default=None, repr=False)
+    fraction_digits: int | None = field(default=None, repr=False)
+    white_space: WhiteSpaceRestriction | None = field(default=None, repr=False)

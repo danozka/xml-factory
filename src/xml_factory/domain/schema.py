@@ -1,26 +1,25 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from xml_factory.domain.xsd_attribute_group import XsdAttributeGroup
-from xml_factory.domain.xsd_complex_type import XsdComplexType
-from xml_factory.domain.xsd_element import XsdElement
-from xml_factory.domain.xsd_form_default import XsdFormDefault
-from xml_factory.domain.xsd_group import XsdGroup
-from xml_factory.domain.xsd_notation import XsdNotation
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
+from xml_factory.domain.attribute_group import AttributeGroup
+from xml_factory.domain.complex_type import ComplexType
+from xml_factory.domain.element import Element
+from xml_factory.domain.form_default import FormDefault
+from xml_factory.domain.group import Group
+from xml_factory.domain.notation import Notation
+from xml_factory.domain.simple_type import SimpleType
 
 
 @dataclass
-class XsdSchema:
-    """Root schema container"""
-    target_namespace: Optional[str] = None
-    element_form_default: XsdFormDefault = XsdFormDefault.unqualified
-    attribute_form_default: XsdFormDefault = XsdFormDefault.unqualified
-    elements: dict[str, XsdElement] = field(default_factory=dict)
-    simple_types: dict[str, XsdSimpleType] = field(default_factory=dict)
-    complex_types: dict[str, XsdComplexType] = field(default_factory=dict)
-    attribute_groups: dict[str, XsdAttributeGroup] = field(default_factory=dict)
-    groups: dict[str, XsdGroup] = field(default_factory=dict)
-    notations: dict[str, XsdNotation] = field(default_factory=dict)
-    imports: dict[str, Optional['XsdSchema']] = field(default_factory=dict)
-    includes: list['XsdSchema'] = field(default_factory=list)
+class Schema:
+    target_namespace: str | None = None
+    element_form_default: FormDefault = FormDefault.unqualified
+    attribute_form_default: FormDefault = FormDefault.unqualified
+    elements: dict[str, Element] = field(default_factory=dict)
+    simple_types: dict[str, SimpleType] = field(default_factory=dict)
+    complex_types: dict[str, ComplexType] = field(default_factory=dict)
+    attribute_groups: dict[str, AttributeGroup] = field(default_factory=dict)
+    groups: dict[str, Group] = field(default_factory=dict)
+    notations: dict[str, Notation] = field(default_factory=dict)
+    imports: dict[str, Optional['Schema']] = field(default_factory=dict)
+    includes: list['Schema'] = field(default_factory=list)

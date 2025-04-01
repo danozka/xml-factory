@@ -1,6 +1,6 @@
 from enum import StrEnum
 
 
-class XsdComplexTypeDerivationType(StrEnum):
+class ComplexDerivationType(StrEnum):
     extension = 'extension'
     restriction = 'restriction'

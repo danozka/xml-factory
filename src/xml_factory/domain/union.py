@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
+from xml_factory.domain.simple_type import SimpleType
 
 
 @dataclass
-class XsdUnion(XsdSimpleType):
-    member_types: Optional[List[XsdSimpleType]] = None
+class Union(SimpleType):
+    member_types: list[SimpleType] | None = None

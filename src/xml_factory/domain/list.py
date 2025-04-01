@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional
 
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
+from xml_factory.domain.simple_type import SimpleType
 
 
 @dataclass
-class XsdList(XsdSimpleType):
-    item_type: Optional[XsdSimpleType] = None
+class List(SimpleType):
+    item_type: SimpleType | None = None

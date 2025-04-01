@@ -1,15 +1,13 @@
 from dataclasses import dataclass, field
-from typing import Optional
 
-from xml_factory.domain.xsd_component import XsdComponent
-from xml_factory.domain.xsd_element import XsdElement
-from xml_factory.domain.xsd_group_type import XsdGroupType
+from xml_factory.domain.component import Component
+from xml_factory.domain.element import Element
+from xml_factory.domain.group_type import GroupType
 
 
 @dataclass
-class XsdGroup(XsdComponent):
-    """Reusable group of elements"""
-    elements: list[XsdElement] = field(default_factory=list)
+class Group(Component):
+    content: list[Element | 'Group'] = field(default_factory=list)
     min_occurs: int = 1
-    max_occurs: Optional[int] = 1
-    type: Optional[XsdGroupType] = None
+    max_occurs: int | None = 1
+    type: GroupType | None = None

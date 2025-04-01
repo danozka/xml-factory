@@ -1,6 +1,6 @@
 from enum import StrEnum
 
 
-class XsdFormDefault(StrEnum):
+class FormDefault(StrEnum):
     qualified = 'qualified'
     unqualified = 'unqualified'

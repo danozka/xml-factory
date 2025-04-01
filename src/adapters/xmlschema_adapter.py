@@ -1,63 +1,62 @@
 import logging
 from logging import Logger
-from typing import Type
 
 from xmlschema.validators import (
-    XMLSchemaBase as XmlschemaSchema,
-    XsdAtomic as XmlschemaAtomic,
-    XsdAtomicBuiltin as XmlschemaAtomicBuiltin,
-    XsdComplexType as XmlschemaComplexType,
-    XsdFacet as XmlschemaFacet,
-    XsdFractionDigitsFacet as XmlschemaFractionDigitsFacet,
-    XsdGroup as XmlschemaGroup,
-    XsdList as XmlschemaList,
-    XsdMaxExclusiveFacet as XmlschemaMaxExclusiveFacet,
-    XsdMaxInclusiveFacet as XmlschemaMaxInclusiveFacet,
-    XsdMaxLengthFacet as XmlschemaMaxLengthFacet,
-    XsdMinExclusiveFacet as XmlschemaMinExclusiveFacet,
-    XsdMinInclusiveFacet as XmlschemaMinInclusiveFacet,
-    XsdMinLengthFacet as XmlschemaMinLengthFacet,
-    XsdPatternFacets as XmlschemaPatternFacets,
-    XsdSimpleType as XmlschemaSimpleType,
-    XsdTotalDigitsFacet as XmlschemaTotalDigitsFacet,
-    XsdUnion as XmlschemaUnion,
-    XsdWhiteSpaceFacet as XmlschemaWhiteSpaceFacet
+    XMLSchemaBase,
+    XsdAtomic,
+    XsdAtomicBuiltin,
+    XsdComplexType,
+    XsdElement,
+    XsdFacet,
+    XsdFractionDigitsFacet,
+    XsdGroup,
+    XsdList,
+    XsdMaxExclusiveFacet,
+    XsdMaxInclusiveFacet,
+    XsdMaxLengthFacet,
+    XsdMinExclusiveFacet,
+    XsdMinInclusiveFacet,
+    XsdMinLengthFacet,
+    XsdPatternFacets,
+    XsdSimpleType,
+    XsdTotalDigitsFacet,
+    XsdUnion,
+    XsdWhiteSpaceFacet
 )
 
-from xml_factory.domain.xsd_all import XsdAll
-from xml_factory.domain.xsd_attribute import XsdAttribute
-from xml_factory.domain.xsd_attribute_use import XsdAttributeUse
-from xml_factory.domain.xsd_attribute_group import XsdAttributeGroup
-from xml_factory.domain.xsd_base_type import XsdBaseType
-from xml_factory.domain.xsd_choice import XsdChoice
-from xml_factory.domain.xsd_complex_type import XsdComplexType
-from xml_factory.domain.xsd_complex_type_derivation_type import XsdComplexTypeDerivationType
-from xml_factory.domain.xsd_form_default import XsdFormDefault
-from xml_factory.domain.xsd_group import XsdGroup
-from xml_factory.domain.xsd_list import XsdList
-from xml_factory.domain.xsd_notation import XsdNotation
-from xml_factory.domain.xsd_restriction import XsdRestriction
-from xml_factory.domain.xsd_schema import XsdSchema
-from xml_factory.domain.xsd_sequence import XsdSequence
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
-from xml_factory.domain.xsd_union import XsdUnion
-from xml_factory.domain.xsd_white_space_restriction import XsdWhiteSpaceRestriction
+from xml_factory.domain.attribute import Attribute
+from xml_factory.domain.attribute_use import AttributeUse
+from xml_factory.domain.attribute_group import AttributeGroup
+from xml_factory.domain.base_type import BaseType
+from xml_factory.domain.complex_type import ComplexType
+from xml_factory.domain.complex_derivation_type import ComplexDerivationType
+from xml_factory.domain.element import Element
+from xml_factory.domain.form_default import FormDefault
+from xml_factory.domain.group import Group
+from xml_factory.domain.group_type import GroupType
+from xml_factory.domain.list import List
+from xml_factory.domain.notation import Notation
+from xml_factory.domain.restriction import Restriction
+from xml_factory.domain.schema import Schema
+from xml_factory.domain.simple_type import SimpleType
+from xml_factory.domain.union import Union
+from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
 
 
 class XmlschemaAdapter:
     _log: Logger = logging.getLogger(__name__)
 
-    def adapt_xmlschema_schema(self, xmlschema_schema: XmlschemaSchema) -> XsdSchema:
+    def adapt_xmlschema_schema(self, xmlschema_schema: XMLSchemaBase) -> Schema:
         self._log.debug(f'Adapting {xmlschema_schema}...')
-        simple_types: dict[str, XsdSimpleType] = {
+        simple_types: dict[str, SimpleType] = {
             xmlschema_simple_type.name: self.adapt_xmlschema_simple_type(xmlschema_simple_type)
             for xmlschema_simple_type in xmlschema_schema.simple_types
         }
-        complex_types: dict[str, XsdComplexType] = {
+        complex_types: dict[str, ComplexType] = {
             xmlschema_complex_type.name: self.adapt_xmlschema_complex_type(xmlschema_complex_type)
             for xmlschema_complex_type in xmlschema_schema.complex_types
         }
-        result: XsdSchema = XsdSchema(
+        result: Schema = Schema(
             target_namespace=xmlschema_schema.target_namespace,
             element_form_default=XsdFormDefault(xmlschema_schema.element_form_default),
             attribute_form_default=XsdFormDefault(xmlschema_schema.attribute_form_default),
@@ -107,87 +106,100 @@ class XmlschemaAdapter:
         self._log.debug(f'{xmlschema_schema} adapted')
         return result
 
-    def adapt_xmlschema_simple_type(self, xmlschema_simple_type: XmlschemaSimpleType) -> XsdSimpleType:
-        if isinstance(xmlschema_simple_type, XmlschemaAtomic):
+    def adapt_xmlschema_simple_type(self, xmlschema_simple_type: XsdSimpleType) -> SimpleType:
+        if isinstance(xmlschema_simple_type, XsdAtomic):
             self._log.debug(f'Adapting restriction {xmlschema_simple_type}...')
-            result: XsdRestriction = XsdRestriction(
+            result: Restriction = Restriction(
                 name=xmlschema_simple_type.local_name,
-                base=XsdBaseType(
+                base=BaseType(
                     xmlschema_simple_type.local_name
-                    if isinstance(xmlschema_simple_type, XmlschemaAtomicBuiltin)
+                    if isinstance(xmlschema_simple_type, XsdAtomicBuiltin)
                     else xmlschema_simple_type.base_type.local_name
                 ),
                 enumeration=xmlschema_simple_type.enumeration
             )
-            xmlschema_facet: XmlschemaFacet
+            xmlschema_facet: XsdFacet
             for facet in xmlschema_simple_type.facets.values():
-                if isinstance(facet, XmlschemaFractionDigitsFacet):
+                if isinstance(facet, XsdFractionDigitsFacet):
                     result.fraction_digits = facet.value
-                elif isinstance(facet, XmlschemaMaxExclusiveFacet):
+                elif isinstance(facet, XsdMaxExclusiveFacet):
                     result.max_exclusive = float(facet.value)
-                elif isinstance(facet, XmlschemaMaxInclusiveFacet):
+                elif isinstance(facet, XsdMaxInclusiveFacet):
                     result.max_inclusive = float(facet.value)
-                elif isinstance(facet, XmlschemaMaxLengthFacet):
+                elif isinstance(facet, XsdMaxLengthFacet):
                     result.max_length = facet.value
-                elif isinstance(facet, XmlschemaMinExclusiveFacet):
+                elif isinstance(facet, XsdMinExclusiveFacet):
                     result.min_exclusive = float(facet.value)
-                elif isinstance(facet, XmlschemaMinInclusiveFacet):
+                elif isinstance(facet, XsdMinInclusiveFacet):
                     result.min_inclusive = float(facet.value)
-                elif isinstance(facet, XmlschemaMinLengthFacet):
+                elif isinstance(facet, XsdMinLengthFacet):
                     result.min_length = int(facet.value)
-                elif isinstance(facet, XmlschemaPatternFacets):
+                elif isinstance(facet, XsdPatternFacets):
                     result.pattern = facet.regexps[0]
-                elif isinstance(facet, XmlschemaTotalDigitsFacet):
+                elif isinstance(facet, XsdTotalDigitsFacet):
                     result.total_digits = facet.value
-                elif isinstance(facet, XmlschemaWhiteSpaceFacet):
-                    result.white_space = XsdWhiteSpaceRestriction(facet.value)
+                elif isinstance(facet, XsdWhiteSpaceFacet):
+                    result.white_space = WhiteSpaceRestriction(facet.value)
             self._log.debug(f'Restriction {xmlschema_simple_type} adapted')
-        elif isinstance(xmlschema_simple_type, XmlschemaUnion):
+        elif isinstance(xmlschema_simple_type, XsdUnion):
             self._log.debug(f'Adapting union {xmlschema_simple_type}...')
-            result: XsdUnion = XsdUnion(
+            result: Union = Union(
                 name=xmlschema_simple_type.local_name,
                 member_types=[self.adapt_xmlschema_simple_type(x) for x in xmlschema_simple_type.member_types]
             )
             self._log.debug(f'Union {xmlschema_simple_type} adapted')
-        elif isinstance(xmlschema_simple_type, XmlschemaList):
+        elif isinstance(xmlschema_simple_type, XsdList):
             self._log.debug(f'Adapting list {xmlschema_simple_type}...')
-            result: XsdList = XsdList(
+            result: List = List(
                 name=xmlschema_simple_type.local_name,
                 item_type=self.adapt_xmlschema_simple_type(xmlschema_simple_type.item_type)
             )
             self._log.debug(f'List {xmlschema_simple_type} adapted')
         else:
-            raise ValueError(f'Unknown simple type {xmlschema_simple_type}')
+            raise NotImplementedError(f'Unknown simple type {xmlschema_simple_type}')
         return result
 
-    def adapt_xmlschema_complex_type(self, xmlschema_complex_type: XmlschemaComplexType) -> XsdComplexType:
+    def adapt_xmlschema_complex_type(self, xmlschema_complex_type: XsdComplexType) -> ComplexType:
         self._log.debug(f'Adapting complex type {xmlschema_complex_type}...')
-        content: XsdSimpleType | XsdGroup | None = None
-        if isinstance(xmlschema_complex_type.content, XmlschemaSimpleType):
-            content: XsdSimpleType = self.adapt_xmlschema_simple_type(xmlschema_complex_type.content)
-        elif isinstance(xmlschema_complex_type.content, XmlschemaGroup):
-            if xmlschema_complex_type.content.model == 'sequence':
-                content_class = XsdAll
-            content: XsdAll = XsdAll(
-                name=xmlschema_complex_type.content.local_name,
-                elements=[
-
-                ],
-                min_occurs=xmlschema_complex_type.content.min_occurs,
-                max_occurs=xmlschema_complex_type.content.max_occurs
-            )
+        if isinstance(xmlschema_complex_type.content, XsdSimpleType):
+            content: SimpleType = self.adapt_xmlschema_simple_type(xmlschema_complex_type.content)
+        elif isinstance(xmlschema_complex_type.content, XsdGroup):
+            content: Group = self.adapt_xmlschema_group(xmlschema_complex_type.content)
         else:
-            raise ValueError(f'Unknown complex type content {xmlschema_complex_type.content}')
-        result: XsdComplexType = XsdComplexType(
+            raise NotImplementedError(f'Unknown complex type content {xmlschema_complex_type.content}')
+        result: ComplexType = ComplexType(
             name=xmlschema_complex_type.local_name,
             mixed=xmlschema_complex_type.mixed,
             content=content,
             attributes={},
             derived_by=(
-                XsdComplexTypeDerivationType(xmlschema_complex_type.derivation)
-                if xmlschema_complex_type.derivation is not None
-                else None
+                ComplexDerivationType(xmlschema_complex_type.derivation)
+                if xmlschema_complex_type.derivation is not None else None
             )
         )
         self._log.debug(f'Complex type {xmlschema_complex_type} adapted')
         return result
+
+    def adapt_xmlschema_group(self, xmlschema_group: XsdGroup) -> Group:
+        self._log.debug(f'Adapting group {xmlschema_group}...')
+        content: list[Element | Group] = []
+        obj: XsdElement | XsdGroup
+        for obj in xmlschema_group.content:
+            if isinstance(obj, XsdElement):
+                content.append(self.adapt_xmlschema_element(obj))
+            elif isinstance(obj, XsdGroup):
+                content.append(self.adapt_xmlschema_group(obj))
+            else:
+                raise NotImplementedError(f'Unknown group content {obj}')
+        result: Group = Group(
+            name=xmlschema_group.local_name,
+            content=content,
+            min_occurs=xmlschema_group.min_occurs,
+            max_occurs=xmlschema_group.max_occurs,
+            type=GroupType(xmlschema_group.model)
+        )
+        self._log.debug(f'Group {xmlschema_group} adapted')
+        return result
+
+    def adapt_xmlschema_element(self, xmlschema_element: XsdElement) -> Element:
+        ...

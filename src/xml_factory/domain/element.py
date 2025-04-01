@@ -1,19 +1,18 @@
 from dataclasses import dataclass
 from typing import Optional, TYPE_CHECKING, Union
 
-from xml_factory.domain.xsd_component import XsdComponent
-from xml_factory.domain.xsd_simple_type import XsdSimpleType
 if TYPE_CHECKING:
-    from xml_factory.domain.xsd_complex_type import XsdComplexType
+    from xml_factory.domain.complex_type import ComplexType
+from xml_factory.domain.component import Component
+from xml_factory.domain.simple_type import SimpleType
 
 
 @dataclass
-class XsdElement(XsdComponent):
-    """Element declaration"""
-    type: Optional[Union[str, XsdSimpleType, 'XsdComplexType']] = None
+class Element(Component):
+    type: Optional[Union[str, SimpleType, 'ComplexType']] = None
     min_occurs: int = 1
-    max_occurs: Optional[int] = 1
+    max_occurs: int | None = 1
     nillable: bool = False
-    default: Optional[str] = None
-    fixed: Optional[str] = None
-    substitution_group: Optional[str] = None
+    default: str | None = None
+    fixed: str | None = None
+    substitution_group: str | None = None
