@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+  <!-- Group definition -->
+  <xs:group name="personInfo">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="age" type="xs:integer"/>
+    </xs:sequence>
+  </xs:group>
+
+  <!-- Complex type with group reference -->
+  <xs:complexType name="employeeType">
+    <xs:sequence>
+      <xs:group ref="personInfo"/> <!-- Reference to 'personInfo' group -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Attribute group definition -->
+  <xs:attributeGroup name="myAttributeGroup">
+    <xs:attribute name="someAttributeOne" type="xs:integer"/>
+    <xs:attribute name="someAttributeTwo" type="xs:string"/>
+  </xs:attributeGroup>
+
   <!-- Simple type definition -->
   <xs:simpleType name="priorityType">
     <xs:restriction base="xs:string">
@@ -14,7 +35,7 @@
   <xs:complexType name="simpleContentType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute name="language" type="xs:language" use="optional"/>
+        <xs:attribute name="language" type="xs:string" use="optional"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -29,6 +50,7 @@
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="price" type="xs:decimal" use="required"/>
+    <xs:attributeGroup ref="myAttributeGroup"/>
   </xs:complexType>
 
   <!-- Complex type with element-only content -->
@@ -39,7 +61,7 @@
       <xs:element name="price" type="xs:decimal"/>
       <xs:element name="quantity" type="xs:integer" default="1"/>
     </xs:sequence>
-    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="id" type="xs:string" use="required"/>
   </xs:complexType>
 
   <!-- Complex type with mixed content -->
@@ -54,8 +76,8 @@
   <xs:complexType name="choiceContentType">
     <xs:choice minOccurs="1" maxOccurs="unbounded">
       <xs:element name="text" type="xs:string"/>
-      <xs:element name="image" type="xs:anyURI"/>
-      <xs:element name="video" type="xs:anyURI"/>
+      <xs:element name="image" type="xs:string"/>
+      <xs:element name="video" type="xs:string"/>
     </xs:choice>
     <xs:attribute name="format" type="xs:string"/>
   </xs:complexType>

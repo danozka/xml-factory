@@ -5,6 +5,8 @@ from xmlschema.validators import (
     XMLSchemaBase,
     XsdAtomic,
     XsdAtomicBuiltin,
+    XsdAttribute,
+    XsdAttributeGroup,
     XsdComplexType,
     XsdElement,
     XsdFacet,
@@ -26,16 +28,13 @@ from xmlschema.validators import (
 
 from xml_factory.domain.attribute import Attribute
 from xml_factory.domain.attribute_use import AttributeUse
-from xml_factory.domain.attribute_group import AttributeGroup
 from xml_factory.domain.base_type import BaseType
 from xml_factory.domain.complex_type import ComplexType
-from xml_factory.domain.complex_derivation_type import ComplexDerivationType
 from xml_factory.domain.element import Element
 from xml_factory.domain.form_default import FormDefault
 from xml_factory.domain.group import Group
 from xml_factory.domain.group_type import GroupType
 from xml_factory.domain.list import List
-from xml_factory.domain.notation import Notation
 from xml_factory.domain.restriction import Restriction
 from xml_factory.domain.schema import Schema
 from xml_factory.domain.simple_type import SimpleType
@@ -48,54 +47,13 @@ class XmlschemaAdapter:
 
     def adapt_xmlschema_schema(self, xmlschema_schema: XMLSchemaBase) -> Schema:
         self._log.debug(f'Adapting {xmlschema_schema}...')
-        simple_types: dict[str, SimpleType] = {
-            xmlschema_simple_type.name: self.adapt_xmlschema_simple_type(xmlschema_simple_type)
-            for xmlschema_simple_type in xmlschema_schema.simple_types
-        }
-        complex_types: dict[str, ComplexType] = {
-            xmlschema_complex_type.name: self.adapt_xmlschema_complex_type(xmlschema_complex_type)
-            for xmlschema_complex_type in xmlschema_schema.complex_types
-        }
         result: Schema = Schema(
             target_namespace=xmlschema_schema.target_namespace,
-            element_form_default=XsdFormDefault(xmlschema_schema.element_form_default),
-            attribute_form_default=XsdFormDefault(xmlschema_schema.attribute_form_default),
-            elements=self._adapt_xmlschema_elements(xmlschema_schema),
-            simple_types=simple_types,
-            complex_types=complex_types,
-            attribute_groups={
-                attr_group_name: XsdAttributeGroup(
-                    name=attr_group.name,
-                    attributes={
-                        attr_name: XsdAttribute(
-                            name=attr.name,
-                            type=attr.type,
-                            use=XsdAttributeUse(attr.use),
-                            default=attr.default,
-                            fixed=attr.fixed
-                        )
-                        for attr_name, attr in attr_group.items()
-                    }
-                )
-                for attr_group_name, attr_group in xmlschema_schema.attribute_groups.items()
-            },
-            groups={
-                group_name: XsdGroup(
-                    name=group.name,
-                    elements=[...],
-                    min_occurs=group.min_occurs,
-                    max_occurs=group.max_occurs,
-                    type=XsdGroupType(group.model)
-                )
-                for group_name, group in xmlschema_schema.groups.items()
-            },
-            notations={
-                notation_name: XsdNotation(
-                    name=notation.name,
-                    system=notation.system,
-                    public=notation.public
-                )
-                for notation_name, notation in xmlschema_schema.notations.items()
+            element_form_default=FormDefault(xmlschema_schema.element_form_default),
+            attribute_form_default=FormDefault(xmlschema_schema.attribute_form_default),
+            elements={
+                element_name: self.adapt_xmlschema_element(element)
+                for element_name, element in xmlschema_schema.elements.items()
             },
             imports={
                 import_name: self.adapt_xmlschema_schema(import_)
@@ -171,11 +129,7 @@ class XmlschemaAdapter:
             name=xmlschema_complex_type.local_name,
             mixed=xmlschema_complex_type.mixed,
             content=content,
-            attributes={},
-            derived_by=(
-                ComplexDerivationType(xmlschema_complex_type.derivation)
-                if xmlschema_complex_type.derivation is not None else None
-            )
+            attributes=[self.adapt_xmlschema_attribute(x) for x in xmlschema_complex_type.attributes.values()]
         )
         self._log.debug(f'Complex type {xmlschema_complex_type} adapted')
         return result
@@ -183,14 +137,14 @@ class XmlschemaAdapter:
     def adapt_xmlschema_group(self, xmlschema_group: XsdGroup) -> Group:
         self._log.debug(f'Adapting group {xmlschema_group}...')
         content: list[Element | Group] = []
-        obj: XsdElement | XsdGroup
-        for obj in xmlschema_group.content:
-            if isinstance(obj, XsdElement):
-                content.append(self.adapt_xmlschema_element(obj))
-            elif isinstance(obj, XsdGroup):
-                content.append(self.adapt_xmlschema_group(obj))
+        x: XsdElement | XsdGroup
+        for x in xmlschema_group.content:
+            if isinstance(x, XsdElement):
+                content.append(self.adapt_xmlschema_element(x))
+            elif isinstance(x, XsdGroup):
+                content.append(self.adapt_xmlschema_group(x))
             else:
-                raise NotImplementedError(f'Unknown group content {obj}')
+                raise NotImplementedError(f'Unknown group content {x}')
         result: Group = Group(
             name=xmlschema_group.local_name,
             content=content,
@@ -201,5 +155,31 @@ class XmlschemaAdapter:
         self._log.debug(f'Group {xmlschema_group} adapted')
         return result
 
+    def adapt_xmlschema_attribute(self, xmlschema_attribute: XsdAttribute) -> Attribute:
+        self._log.debug(f'Adapting attribute {xmlschema_attribute}...')
+        result: Attribute = Attribute(
+            name=xmlschema_attribute.local_name,
+            type=self.adapt_xmlschema_simple_type(xmlschema_attribute.type),
+            use=AttributeUse(xmlschema_attribute.use),
+            default=xmlschema_attribute.default,
+            fixed=xmlschema_attribute.fixed
+        )
+        self._log.debug(f'Attribute {xmlschema_attribute} adapted')
+        return result
+
     def adapt_xmlschema_element(self, xmlschema_element: XsdElement) -> Element:
-        ...
+        self._log.debug(f'Adapting element {xmlschema_element}...')
+        result: Element = Element(
+            name=xmlschema_element.local_name,
+            type=(
+                self.adapt_xmlschema_simple_type(xmlschema_element.type)
+                if isinstance(xmlschema_element.type, XsdSimpleType)
+                else self.adapt_xmlschema_complex_type(xmlschema_element.type)
+            ),
+            min_occurs=xmlschema_element.min_occurs,
+            max_occurs=xmlschema_element.max_occurs,
+            default=xmlschema_element.default,
+            fixed=xmlschema_element.fixed
+        )
+        self._log.debug(f'Element {xmlschema_element} adapted')
+        return result
