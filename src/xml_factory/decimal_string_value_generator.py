@@ -1,20 +1,25 @@
 import math
 import random
 
+from xml_factory.domain.restriction import Restriction
 
-class TagRandomDecimalStringGenerator:
+
+class DecimalStringValueGenerator:
     @staticmethod
-    def generate_random_decimal_string_for_tag(
-        tag_name: str = 'TAG',
-        pattern: str | None = None,
-        min_inclusive: float | None = None,
-        max_inclusive: float | None = None,
-        min_exclusive: float | None = None,
-        max_exclusive: float | None = None,
-        fraction_digits: int | None = None
-    ) -> str:
-        if pattern is not None:
-            return input(f'[{tag_name}] Input decimal for the regular expression \'{pattern}\': ')
+    def generate_decimal_string_value(value: float, fraction_digits: int | None = None) -> str:
+        if fraction_digits is None:
+            fraction_digits = 2
+        return f'{value:.{fraction_digits}f}'
+
+    @staticmethod
+    def generate_random_decimal_string_value(restriction: Restriction) -> str:
+        min_inclusive: float | None = restriction.min_inclusive
+        max_inclusive: float | None = restriction.max_inclusive
+        min_exclusive: float | None = restriction.min_exclusive
+        max_exclusive: float | None = restriction.max_exclusive
+        fraction_digits: int | None = restriction.fraction_digits
+        if restriction.pattern is not None:
+            return input(f'[{restriction.name}] Input decimal for the regular expression \'{restriction.pattern}\': ')
         if min_inclusive is None:
             min_inclusive = 0.0
         if max_inclusive is None:

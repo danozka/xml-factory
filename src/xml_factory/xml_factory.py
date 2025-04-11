@@ -118,20 +118,20 @@ class XmlFactory:
     def _xsd_element_to_xml_element(self, xsd_element: XsdElement) -> XmlElement:
         xml_element: XmlElement
         if xsd_element.fixed is not None:
-            self._log.debug(f'Generating fixed element \'{xsd_element.name}\'...')
+            self._log.debug(f'Generating fixed-value element \'{xsd_element.name}\'...')
             xml_element = self._xsd_fixed_element_to_xml_element(xsd_element)
             self._log.debug(f'Fixed element \'{xsd_element.name}\' generated')
         elif xsd_element.type.is_complex():
-            self._log.debug(f'Generating complex element \'{xsd_element.name}\'...')
+            self._log.debug(f'Generating complex-type element \'{xsd_element.name}\'...')
             xml_element = self._xsd_complex_element_to_xml_element(xsd_element)
             xml_element.attrib = self._get_xsd_element_attributes(xsd_element)
             self._log.debug(f'Complex element \'{xsd_element.name}\' generated')
         elif xsd_element.type.is_simple():
-            self._log.debug(f'Generating simple element \'{xsd_element.name}\'...')
+            self._log.debug(f'Generating simple-type element \'{xsd_element.name}\'...')
             xml_element = self._xsd_simple_element_to_xml_element(xsd_element)
             self._log.debug(f'Simple element \'{xsd_element.name}\' generated')
         else:
-            raise NotImplementedError(f'Unknown XSD element type {xsd_element.type} for {self}')
+            raise NotImplementedError(f'Unsupported XSD element type {xsd_element.type} for {self}')
         return xml_element
 
     def _get_xsd_element_attributes(self, xsd_element: XsdElement) -> dict[str, str]:

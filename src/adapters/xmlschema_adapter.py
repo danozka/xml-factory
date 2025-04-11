@@ -69,7 +69,7 @@ class XmlschemaAdapter:
             self._log.debug(f'Adapting restriction {xmlschema_simple_type}...')
             result: Restriction = Restriction(
                 name=xmlschema_simple_type.local_name,
-                base=BaseType(
+                base_type=BaseType(
                     xmlschema_simple_type.local_name
                     if isinstance(xmlschema_simple_type, XsdAtomicBuiltin)
                     else xmlschema_simple_type.base_type.local_name
