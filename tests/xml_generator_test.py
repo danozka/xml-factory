@@ -28,6 +28,6 @@ def test_xml_is_generated(
     exit_code: int = xml_generator.generate_xml(
         xsd_path=test_complex_types_schema_path,
         xml_path=test_xml_path,
-        root_element_name='catalog'
+        root_element_name='Company'
     )
     assert exit_code == 0
