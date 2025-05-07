@@ -61,8 +61,6 @@ class XmlGenerator:
             xml_schema.validate(xml_path)
             self._log.info(f'XML generated successfully at \'{xml_path}\'')
             exit_code = self._EXIT_CODE_SUCCESS
-            from xml.etree.ElementTree import tostring
-            print(tostring(element=xml_element_tree.getroot(), encoding='unicode'))
         except XMLSchemaValidationError as exception:
             self._log.error(f'XML validation error: {exception}')
             if xml_path.exists():
@@ -74,6 +72,7 @@ class XmlGenerator:
     def _generate_xml_element(self, xsd_element: XsdElement) -> Element:
         xml_element: Element
         if xsd_element.type.is_simple():
+            self._log.debug(f'Generating simple type element \'{xsd_element.local_name}\'')
             xml_element = Element(xsd_element.local_name)
             if xsd_element.fixed is not None:
                 xml_element.text = xsd_element.fixed
@@ -83,8 +82,11 @@ class XmlGenerator:
                 xml_element.text = self._xml_simple_type_value_generator.generate_xml_simple_type_value(
                     xsd_element.type
                 )
+            self._log.debug(f'Simple type element \'{xsd_element.local_name}\' generated successfully')
         else:
+            self._log.debug(f'Generating complex type element \'{xsd_element.local_name}\'')
             xml_element = self._generate_xml_complex_type_element(xsd_element)
+            self._log.debug(f'Complex type element \'{xsd_element.local_name}\' generated successfully')
         return xml_element
 
     def _generate_xml_complex_type_element(self, xsd_element: XsdElement) -> Element:
