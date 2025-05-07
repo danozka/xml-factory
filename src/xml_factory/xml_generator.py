@@ -14,15 +14,25 @@ class XmlGenerator:
     _EXIT_CODE_SUCCESS: int  = 0
     _EXIT_CODE_FAILURE: int  = 1
     _INDENT_SPACES: int = 4
+    _UNBOUNDED_OCCURS: int = 5
     _log: Logger = logging.getLogger(__name__)
+    _force_min_occurs: bool
+    _force_max_occurs: bool
+    _force_optional: bool
     _force_default_value: bool
     _xml_simple_type_value_generator: XmlSimpleTypeValueGenerator
 
     def __init__(
         self,
+        force_min_occurs: bool = False,
+        force_max_occurs: bool = False,
+        force_optional: bool = False,
         force_default_value: bool = False,
         xml_simple_type_value_generator: XmlSimpleTypeValueGenerator = XmlSimpleTypeValueGenerator()
     ) -> None:
+        self._force_min_occurs = force_min_occurs
+        self._force_max_occurs = force_max_occurs
+        self._force_optional = force_optional
         self._force_default_value = force_default_value
         self._xml_simple_type_value_generator = xml_simple_type_value_generator
 
@@ -30,6 +40,15 @@ class XmlGenerator:
         self._log.info(f'Generating XML for XSD \'{xsd_path}\'...')
         exit_code: int = self._EXIT_CODE_FAILURE
         try:
+            if (
+                (self._force_min_occurs and self._force_max_occurs) or
+                (self._force_min_occurs and self._force_optional) or
+                (self._force_optional and self._force_max_occurs)
+            ):
+                raise ValueError(
+                    'Only one of these parameters can be True: '
+                    '\'force_min_occurs\', \'force_max_occurs\', \'force_optional\''
+                )
             if not xsd_path.is_file():
                 raise FileNotFoundError(f'XSD file \'{xsd_path}\' does not exist')
             xml_schema: XMLSchema = XMLSchema(xsd_path)
@@ -42,6 +61,8 @@ class XmlGenerator:
             xml_schema.validate(xml_path)
             self._log.info(f'XML generated successfully at \'{xml_path}\'')
             exit_code = self._EXIT_CODE_SUCCESS
+            from xml.etree.ElementTree import tostring
+            print(tostring(element=xml_element_tree.getroot(), encoding='unicode'))
         except XMLSchemaValidationError as exception:
             self._log.error(f'XML validation error: {exception}')
             if xml_path.exists():
@@ -103,9 +124,24 @@ class XmlGenerator:
             raise NotImplementedError(f'Unknown group model \'{xsd_group.model}\'')
 
     def _handle_group_content(self, xml_parent_element: Element, group_content: XsdElement | XsdGroup) -> None:
-        if isinstance(group_content, XsdElement):
-            xml_parent_element.append(self._generate_xml_element(group_content))
-        elif isinstance(group_content, XsdGroup):
-            self._populate_xml_group_element(xml_parent_element=xml_parent_element, xsd_group=group_content)
+        min_occurs: int = group_content.min_occurs
+        max_occurs: int = (
+            max(min_occurs, self._UNBOUNDED_OCCURS)
+            if group_content.max_occurs is None else group_content.max_occurs
+        )
+        occurs: int
+        if self._force_min_occurs:
+            occurs = min_occurs
+        elif self._force_min_occurs:
+            occurs = max_occurs
+        elif self._force_optional:
+            occurs = 1
         else:
-            raise NotImplementedError(f'Unknown group content {group_content}')
+            occurs = random.randint(a=min_occurs, b=max_occurs)
+        for _ in range(occurs):
+            if isinstance(group_content, XsdElement):
+                xml_parent_element.append(self._generate_xml_element(group_content))
+            elif isinstance(group_content, XsdGroup):
+                self._populate_xml_group_element(xml_parent_element=xml_parent_element, xsd_group=group_content)
+            else:
+                raise NotImplementedError(f'Unknown group content {group_content}')

@@ -18,11 +18,15 @@ def main(
     ] = 'INFO',
     force_min_occurs: Annotated[
         bool,
-        typer.Option(default='--force-min-occurs', help='Force minimum occurrence on each element')
+        typer.Option(default='--force-min-occurs', help='Force minimum occurrence on each component')
     ] = False,
     force_max_occurs: Annotated[
         bool,
-        typer.Option(default='--force-max-occurs', help='Force maximum occurrence on each element')
+        typer.Option(default='--force-max-occurs', help='Force maximum occurrence on each component')
+    ] = False,
+    force_optional: Annotated[
+        bool,
+        typer.Option(default='--force-optional', help='Force at least one occurrence for optional components')
     ] = False,
     force_default_value: Annotated[
         bool,
@@ -43,6 +47,9 @@ def main(
         level=log_level
     )
     xml_factory: XmlGenerator = XmlGenerator(
+        force_min_occurs=force_min_occurs,
+        force_max_occurs=force_max_occurs,
+        force_optional=force_optional,
         force_default_value=force_default_value,
         xml_simple_type_value_generator=XmlSimpleTypeValueGenerator(
             force_min_value=force_min_value,

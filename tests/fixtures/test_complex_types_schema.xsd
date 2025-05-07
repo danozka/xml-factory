@@ -69,7 +69,7 @@
     <xs:sequence>
       <xs:element name="Email" type="xs:string"/>
       <xs:element name="Phone" type="xs:string"/>
-      <xs:group ref="EmergencyContactGroup" minOccurs="0"/>
+      <xs:group ref="EmergencyContactGroup" minOccurs="0" maxOccurs="3"/>
     </xs:sequence>
   </xs:group>
 
