@@ -1,3 +1,11 @@
-from .xml_generator import XmlGenerator
-from .xml_simple_type_value_generator import XmlSimpleTypeValueGenerator
-
+from xml_factory.complex.group_content_at_least_one_number_of_occurrences_getter import (
+    GroupContentAtLeastOneNumberOfOccurrencesGetter
+)
+from xml_factory.complex.group_content_max_number_of_occurrences_getter import GroupContentMaxNumberOfOccurrencesGetter
+from xml_factory.complex.group_content_min_number_of_occurrences_getter import GroupContentMinNumberOfOccurrencesGetter
+from xml_factory.complex.group_content_random_number_of_occurrences_getter import (
+    GroupContentRandomNumberOfOccurrencesGetter
+)
+from xml_factory.complex.i_group_content_number_of_occurrences_getter import IGroupContentNumberOfOccurrencesGetter
+from xml_factory.simple.xml_simple_type_value_generator import XmlSimpleTypeValueGenerator
+from xml_factory.xml_generator import XmlGenerator
