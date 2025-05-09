@@ -11,8 +11,11 @@ from xml_factory import (
     GroupContentMinNumberOfOccurrencesGetter,
     GroupContentRandomNumberOfOccurrencesGetter,
     IGroupContentNumberOfOccurrencesGetter,
-    XmlGenerator,
-    XmlSimpleTypeValueGenerator
+    IRestrictionValueGenerator,
+    RestrictionMaxValueGenerator,
+    RestrictionMinValueGenerator,
+    RestrictionRandomValueGenerator,
+    XmlGenerator
 )
 
 
@@ -61,12 +64,16 @@ def main(
         datefmt='%d-%m-%Y %H:%M:%S',
         level=log_level
     )
-    active_options: int = sum([force_min_occurs, force_max_occurs, force_at_least_one_occurs])
-    if active_options > 1:
+    occurs_options: int = sum([force_min_occurs, force_max_occurs, force_at_least_one_occurs])
+    if occurs_options > 1:
         logging.error(
-            'Only one of \'--force-min-occurs\', \'--force-max-occurs\', or \'--force-at-least-one-occurs\' '
+            'Only one of \'--force-min-occurs\', \'--force-max-occurs\', \'--force-at-least-one-occurs\' '
             'can be set to True'
         )
+        sys.exit(1)
+    value_options: int = sum([force_min_value, force_max_value])
+    if value_options > 1:
+        logging.error('Only one of \'--force-min\', \'--force-max\' can be set to True')
         sys.exit(1)
     group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter
     if force_min_occurs:
@@ -77,13 +84,17 @@ def main(
         group_content_number_of_occurrences_getter = GroupContentAtLeastOneNumberOfOccurrencesGetter()
     else:
         group_content_number_of_occurrences_getter = GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs)
+    restriction_value_generator: IRestrictionValueGenerator
+    if force_min_value:
+        restriction_value_generator = RestrictionMinValueGenerator()
+    elif force_max_value:
+        restriction_value_generator = RestrictionMaxValueGenerator()
+    else:
+        restriction_value_generator = RestrictionRandomValueGenerator()
     xml_factory: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=group_content_number_of_occurrences_getter,
-        force_default_value=force_default_value,
-        xml_simple_type_value_generator=XmlSimpleTypeValueGenerator(
-            force_min_value=force_min_value,
-            force_max_value=force_max_value
-        )
+        restriction_value_generator=restriction_value_generator,
+        force_default_value=force_default_value
     )
     exit_code: int = xml_factory.generate_xml(xsd_path=xsd, xml_path=xml, root_element_name=root)
     sys.exit(exit_code)
