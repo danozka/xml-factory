@@ -19,8 +19,6 @@ class IntegerStringValueGenerator:
             int(restriction.max_exclusive) if restriction.max_exclusive is not None else restriction.max_exclusive
         )
         total_digits: int = restriction.total_digits
-        if restriction.pattern is not None:
-            return input(f'[{restriction.name}] Input integer for the regular expression \'{restriction.pattern}\': ')
         if min_inclusive is None:
             min_inclusive = 0
         if max_inclusive is None:

@@ -23,22 +23,12 @@ class StringValueGenerator:
         result: str
         min_length: int | None = restriction.min_length
         max_length: int | None = restriction.max_length
-        if restriction.pattern is not None:
-            input_string: str = (
-                f'[{restriction.name}] Input string for the regular expression \'{restriction.pattern}\'')
-            if min_length is not None:
-                input_string += f' + [minLength={min_length}]'
-            if max_length is not None:
-                input_string += f' + [maxLength={max_length}]'
-            input_string += ': '
-            result = input(input_string)
-        else:
-            if min_length is None:
-                min_length = 1
-            if max_length is None:
-                max_length = 10
-            length: int = random.randint(a=min_length, b=max_length)
-            result = ''.join(random.choices(population=(ascii_letters + digits), k=length))
+        if min_length is None:
+            min_length = 1
+        if max_length is None:
+            max_length = 10
+        length: int = random.randint(a=min_length, b=max_length)
+        result = ''.join(random.choices(population=(ascii_letters + digits), k=length))
         if restriction.white_space == WhiteSpaceRestriction.replace:
             result = result.replace(' ', '_')
         elif restriction.white_space == WhiteSpaceRestriction.collapse:

@@ -18,8 +18,6 @@ class DecimalStringValueGenerator:
         min_exclusive: float | None = restriction.min_exclusive
         max_exclusive: float | None = restriction.max_exclusive
         fraction_digits: int | None = restriction.fraction_digits
-        if restriction.pattern is not None:
-            return input(f'[{restriction.name}] Input decimal for the regular expression \'{restriction.pattern}\': ')
         if min_inclusive is None:
             min_inclusive = 0.0
         if max_inclusive is None:

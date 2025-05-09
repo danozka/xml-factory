@@ -29,6 +29,7 @@ from xml_factory.complex.i_group_content_number_of_occurrences_getter import IGr
 from xml_factory.domain.base_type import BaseType
 from xml_factory.domain.restriction import Restriction
 from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
+from xml_factory.simple.i_restriction_pattern_value_generator import IRestrictionPatternValueGenerator
 from xml_factory.simple.i_restriction_value_generator import IRestrictionValueGenerator
 
 
@@ -39,16 +40,19 @@ class XmlGenerator:
     _INDENT_SPACES: int = 4
     _log: Logger = logging.getLogger(__name__)
     _group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter
+    _restriction_pattern_value_generator: IRestrictionPatternValueGenerator
     _restriction_value_generator: IRestrictionValueGenerator
     _force_default_value: bool
 
     def __init__(
         self,
         group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter,
+        restriction_pattern_value_generator: IRestrictionPatternValueGenerator,
         restriction_value_generator: IRestrictionValueGenerator,
         force_default_value: bool = False
     ) -> None:
         self._group_content_number_of_occurrences_getter = group_content_number_of_occurrences_getter
+        self._restriction_pattern_value_generator = restriction_pattern_value_generator
         self._restriction_value_generator = restriction_value_generator
         self._force_default_value = force_default_value
 
@@ -66,6 +70,7 @@ class XmlGenerator:
             xml_element_tree.write(file_or_filename=xml_path, encoding=self._ENCODING, xml_declaration=True)
             self._log.info('Validating XML...')
             xml_schema.validate(xml_path)
+            self._restriction_pattern_value_generator.update_patterns()
             self._log.info(f'XML generated successfully at \'{xml_path}\'')
             exit_code = self._EXIT_CODE_SUCCESS
         except XMLSchemaValidationError as exception:
@@ -131,7 +136,10 @@ class XmlGenerator:
                     restriction.total_digits = facet.value
                 elif isinstance(facet, XsdWhiteSpaceFacet):
                     restriction.white_space = WhiteSpaceRestriction(facet.value)
-            return self._restriction_value_generator.generate_restriction_value(restriction)
+            if restriction.pattern is not None:
+                return self._restriction_pattern_value_generator.generate_restriction_pattern_value(restriction)
+            else:
+                return self._restriction_value_generator.generate_restriction_value(restriction)
 
     def _generate_xml_complex_type_element(self, xsd_element: XsdElement) -> Element:
         xml_element: Element = Element(xsd_element.local_name)

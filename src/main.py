@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 from typing_extensions import Annotated
 
+from json_file_restriction_pattern_value_generator import JsonFileRestrictionPatternValueGenerator
 from xml_factory import (
     GroupContentAtLeastOneNumberOfOccurrencesGetter,
     GroupContentMaxNumberOfOccurrencesGetter,
@@ -20,9 +21,10 @@ from xml_factory import (
 
 
 def main(
-    xsd: Annotated[Path, typer.Option(help='XSD file path', show_default=False)],
-    xml: Annotated[Path, typer.Option(help='Output XML path', show_default=False)],
+    xsd: Annotated[Path, typer.Option(help='Input XSD file path', show_default=False)],
+    xml: Annotated[Path, typer.Option(help='Output XML file path', show_default=False)],
     root: Annotated[str, typer.Option(help='Name of the XSD root element', show_default=False)],
+    patterns_file: Annotated[Path, typer.Option(help='JSON patterns file path')] = Path('patterns.json'),
     log_level: Annotated[
         str,
         typer.Option(help='Application logging level: DEBUG, INFO, WARNING, ERROR or CRITICAL')
@@ -93,6 +95,7 @@ def main(
         restriction_value_generator = RestrictionRandomValueGenerator()
     xml_factory: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=group_content_number_of_occurrences_getter,
+        restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(patterns_file),
         restriction_value_generator=restriction_value_generator,
         force_default_value=force_default_value
     )
