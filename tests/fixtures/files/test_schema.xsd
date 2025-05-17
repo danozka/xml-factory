@@ -5,21 +5,21 @@
   <xs:element name="PurchaseOrder">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="OrderInfo" />
-        <xs:element ref="Customer" />
-        <xs:element ref="Items" />
-        <xs:element ref="Payment" minOccurs="0" />
-        <xs:element ref="Shipping" />
-        <xs:element ref="Notes" minOccurs="0" maxOccurs="5" />
+        <xs:element ref="OrderInfo"/>
+        <xs:element ref="Customer"/>
+        <xs:element ref="Items"/>
+        <xs:element ref="Payment" minOccurs="0"/>
+        <xs:element ref="Shipping"/>
+        <xs:element ref="Notes" minOccurs="0" maxOccurs="5"/>
       </xs:sequence>
-      <xs:attribute name="orderDate" type="xs:date" use="required" />
-      <xs:attribute name="id" type="OrderNumberType" use="required" />
+      <xs:attribute name="orderDate" type="xs:date" use="required"/>
+      <xs:attribute name="id" type="OrderNumberType" use="required"/>
       <xs:attribute name="priority" default="normal">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="high" />
-            <xs:enumeration value="normal" />
-            <xs:enumeration value="low" />
+            <xs:enumeration value="high"/>
+            <xs:enumeration value="normal"/>
+            <xs:enumeration value="low"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -30,18 +30,18 @@
   <xs:element name="OrderInfo">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="OrderNumber" type="OrderNumberType" />
-        <xs:element name="OrderDate" type="xs:date" />
-        <xs:element name="ExpectedDeliveryDate" type="xs:date" minOccurs="0" />
+        <xs:element name="OrderNumber" type="OrderNumberType"/>
+        <xs:element name="OrderDate" type="xs:date"/>
+        <xs:element name="ExpectedDeliveryDate" type="xs:date" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="status">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="pending" />
-            <xs:enumeration value="processing" />
-            <xs:enumeration value="shipped" />
-            <xs:enumeration value="delivered" />
-            <xs:enumeration value="canceled" />
+            <xs:enumeration value="pending"/>
+            <xs:enumeration value="processing"/>
+            <xs:enumeration value="shipped"/>
+            <xs:enumeration value="delivered"/>
+            <xs:enumeration value="canceled"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -55,34 +55,34 @@
         <xs:element name="Name">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="FirstName" type="NameType" />
-              <xs:element name="LastName" type="NameType" />
-              <xs:element name="MiddleName" type="NameType" minOccurs="0" />
+              <xs:element name="FirstName" type="NameType"/>
+              <xs:element name="LastName" type="NameType"/>
+              <xs:element name="MiddleName" type="NameType" minOccurs="0"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="ContactInfo">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Email" type="EmailType" />
-              <xs:element name="Phone" type="PhoneType" minOccurs="0" maxOccurs="3" />
+              <xs:element name="Email" type="EmailType"/>
+              <xs:element name="Phone" type="PhoneType" minOccurs="0" maxOccurs="3"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="Address">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Street" type="xs:string" />
-              <xs:element name="City" type="xs:string" />
-              <xs:element name="State" type="StateType" />
-              <xs:element name="ZipCode" type="ZipCodeType" />
-              <xs:element name="Country" type="CountryType" />
+              <xs:element name="Street" type="xs:string"/>
+              <xs:element name="City" type="xs:string"/>
+              <xs:element name="State" type="StateType"/>
+              <xs:element name="ZipCode" type="ZipCodeType"/>
+              <xs:element name="Country" type="CountryType"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="id" type="CustomerIDType" use="required" />
-      <xs:attribute name="memberSince" type="xs:gYear" />
+      <xs:attribute name="id" type="CustomerIDType" use="required"/>
+      <xs:attribute name="memberSince" type="xs:gYear"/>
     </xs:complexType>
   </xs:element>
 
@@ -93,19 +93,19 @@
         <xs:element name="Item" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="ProductCode" type="ProductCodeType" />
-              <xs:element name="Description" type="xs:string" />
-              <xs:element name="Category" type="CategoryType" />
-              <xs:element name="Price" type="PriceType" />
-              <xs:element name="Quantity" type="QuantityType" />
-              <xs:element name="Discount" type="DiscountType" minOccurs="0" />
+              <xs:element name="ProductCode" type="ProductCodeType"/>
+              <xs:element name="Description" type="xs:string"/>
+              <xs:element name="Category" type="CategoryType"/>
+              <xs:element name="Price" type="PriceType"/>
+              <xs:element name="Quantity" type="QuantityType"/>
+              <xs:element name="Discount" type="DiscountType" minOccurs="0"/>
             </xs:sequence>
-            <xs:attribute name="id" type="xs:positiveInteger" use="required" />
-            <xs:attribute name="available" type="xs:boolean" default="true" />
+            <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+            <xs:attribute name="available" type="xs:boolean" default="true"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="count" type="xs:positiveInteger" />
+      <xs:attribute name="count" type="xs:positiveInteger"/>
     </xs:complexType>
   </xs:element>
 
@@ -116,16 +116,16 @@
         <xs:element name="CreditCard">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="CardNumber" type="CreditCardType" />
-              <xs:element name="ExpirationDate" type="xs:gYearMonth" />
-              <xs:element name="CardholderName" type="xs:string" />
+              <xs:element name="CardNumber" type="CreditCardType"/>
+              <xs:element name="ExpirationDate" type="xs:gYearMonth"/>
+              <xs:element name="CardholderName" type="xs:string"/>
             </xs:sequence>
             <xs:attribute name="type">
               <xs:simpleType>
                 <xs:restriction base="xs:string">
-                  <xs:enumeration value="Visa" />
-                  <xs:enumeration value="MasterCard" />
-                  <xs:enumeration value="Amex" />
+                  <xs:enumeration value="Visa"/>
+                  <xs:enumeration value="MasterCard"/>
+                  <xs:enumeration value="Amex"/>
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
@@ -134,9 +134,9 @@
         <xs:element name="BankTransfer">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="AccountNumber" type="AccountNumberType" />
-              <xs:element name="BankCode" type="BankCodeType" />
-              <xs:element name="Reference" type="xs:string" />
+              <xs:element name="AccountNumber" type="AccountNumberType"/>
+              <xs:element name="BankCode" type="BankCodeType"/>
+              <xs:element name="Reference" type="xs:string"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -144,12 +144,12 @@
       <xs:attribute name="method" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="credit_card" />
-            <xs:enumeration value="bank_transfer" />
+            <xs:enumeration value="credit_card"/>
+            <xs:enumeration value="bank_transfer"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="totalAmount" type="PriceType" use="required" />
+      <xs:attribute name="totalAmount" type="PriceType" use="required"/>
     </xs:complexType>
   </xs:element>
 
@@ -160,133 +160,133 @@
         <xs:element name="Method">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="Standard" />
-              <xs:enumeration value="Express" />
-              <xs:enumeration value="Overnight" />
+              <xs:enumeration value="Standard"/>
+              <xs:enumeration value="Express"/>
+              <xs:enumeration value="Overnight"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
-        <xs:element name="TrackingNumber" type="TrackingNumberType" minOccurs="0" />
-        <xs:element name="Cost" type="PriceType" />
-        <xs:element name="EstimatedDelivery" type="xs:date" minOccurs="0" />
+        <xs:element name="TrackingNumber" type="TrackingNumberType" minOccurs="0"/>
+        <xs:element name="Cost" type="PriceType"/>
+        <xs:element name="EstimatedDelivery" type="xs:date" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
   <!-- Notes -->
-  <xs:element name="Notes" type="xs:string" />
+  <xs:element name="Notes" type="xs:string"/>
 
   <!-- Simple Type Definitions -->
   <xs:simpleType name="OrderNumberType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="ORD-[0-9]{6}" />
+      <xs:pattern value="ORD-[0-9]{6}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="NameType">
     <xs:restriction base="xs:string">
-      <xs:minLength value="2" />
-      <xs:maxLength value="50" />
+      <xs:minLength value="2"/>
+      <xs:maxLength value="50"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="EmailType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[^@]+@[^.]+..+" />
+      <xs:pattern value="[^@]+@[^.]+..+"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="PhoneType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="\+?[0-9\s\-()]{10,20}" />
+      <xs:pattern value="\+?[0-9\s\-()]{10,20}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="StateType">
     <xs:restriction base="xs:string">
-      <xs:length value="2" />
+      <xs:length value="2"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="ZipCodeType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[0-9]{5}(-[0-9]{4})?" />
+      <xs:pattern value="[0-9]{5}(-[0-9]{4})?"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="CountryType">
     <xs:restriction base="xs:string">
-      <xs:minLength value="2" />
-      <xs:maxLength value="50" />
+      <xs:minLength value="2"/>
+      <xs:maxLength value="50"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="CustomerIDType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="CUST-[0-9]{8}" />
+      <xs:pattern value="CUST-[0-9]{8}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="ProductCodeType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="P[0-9]{4}-[A-Z]{2}" />
+      <xs:pattern value="P[0-9]{4}-[A-Z]{2}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="CategoryType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="Electronics" />
-      <xs:enumeration value="Books" />
-      <xs:enumeration value="Clothing" />
-      <xs:enumeration value="Home" />
-      <xs:enumeration value="Sports" />
-      <xs:enumeration value="Automotive" />
+      <xs:enumeration value="Electronics"/>
+      <xs:enumeration value="Books"/>
+      <xs:enumeration value="Clothing"/>
+      <xs:enumeration value="Home"/>
+      <xs:enumeration value="Sports"/>
+      <xs:enumeration value="Automotive"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="PriceType">
     <xs:restriction base="xs:decimal">
-      <xs:minInclusive value="0.00" />
-      <xs:maxInclusive value="99999.99" />
-      <xs:fractionDigits value="2" />
+      <xs:minInclusive value="0.00"/>
+      <xs:maxInclusive value="99999.99"/>
+      <xs:fractionDigits value="2"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="QuantityType">
     <xs:restriction base="xs:positiveInteger">
-      <xs:maxInclusive value="999" />
+      <xs:maxInclusive value="999"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="DiscountType">
     <xs:restriction base="xs:decimal">
-      <xs:minInclusive value="0.00" />
-      <xs:maxInclusive value="100.00" />
-      <xs:fractionDigits value="2" />
+      <xs:minInclusive value="0.00"/>
+      <xs:maxInclusive value="100.00"/>
+      <xs:fractionDigits value="2"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="CreditCardType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[0-9]{16}" />
+      <xs:pattern value="[0-9]{16}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="AccountNumberType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Z0-9]{10,20}" />
+      <xs:pattern value="[A-Z0-9]{10,20}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="BankCodeType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Z]{4}[A-Z0-9]{6}" />
+      <xs:pattern value="[A-Z]{4}[A-Z0-9]{6}"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="TrackingNumberType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Z]{2}[0-9]{12}" />
+      <xs:pattern value="[A-Z]{2}[0-9]{12}"/>
     </xs:restriction>
   </xs:simpleType>
 

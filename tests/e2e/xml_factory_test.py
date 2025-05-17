@@ -25,6 +25,18 @@ def temp_xml_path(tmp_path: Path) -> Generator[Path, None, None]:
         temp_xml_path.unlink()
 
 
+def assert_xml_result(xml_generator: XmlGenerator, xsd_path: Path, xml_path: Path) -> None:
+    exit_code: int = xml_generator.generate_xml(xsd_path=xsd_path, xml_path=xml_path, root_element_name='PurchaseOrder')
+    assert exit_code == 0
+    assert xml_path.exists()
+    assert xml_path.stat().st_size > 0
+
+
+def get_xml_root_element(xml_path: Path) -> Element:
+    tree: ElementTree = ElementTree(file=xml_path)
+    return tree.getroot()
+
+
 def test_generate_xml_random(test_schema_file_path: Path, test_patterns_file_path: Path, temp_xml_path: Path) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs=3),
@@ -32,16 +44,8 @@ def test_generate_xml_random(test_schema_file_path: Path, test_patterns_file_pat
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     assert 'orderDate' in root.attrib
     assert 'id' in root.attrib
     assert 'priority' in root.attrib
@@ -61,16 +65,8 @@ def test_generate_xml_min_occurs(
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     assert root.find('Payment') is None
     assert root.find('Notes') is None
     items: Element | None = root.find('Items')
@@ -89,16 +85,8 @@ def test_generate_xml_max_occurs(
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     notes: list[Element] = root.findall('Notes')
     assert notes is not None
     items: Element | None = root.find('Items')
@@ -117,16 +105,8 @@ def test_generate_xml_at_least_one(
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     assert root.find('Payment') is not None
     assert root.find('Notes') is not None
 
@@ -142,16 +122,8 @@ def test_generate_xml_min_values(
         restriction_value_generator=RestrictionMinValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     items: Element | None = root.find('Items')
     assert items is not None
     if items is not None:
@@ -171,16 +143,8 @@ def test_generate_xml_max_values(
         restriction_value_generator=RestrictionMaxValueGenerator(),
         force_default_value=False
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     items: Element | None = root.find('Items')
     assert items is not None
     if items is not None:
@@ -200,16 +164,8 @@ def test_generate_xml_force_default(
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=True
     )
-    exit_code: int = xml_generator.generate_xml(
-        xsd_path=test_schema_file_path,
-        xml_path=temp_xml_path,
-        root_element_name='PurchaseOrder'
-    )
-    assert exit_code == 0
-    assert temp_xml_path.exists()
-    assert temp_xml_path.stat().st_size > 0
-    tree: ElementTree = ElementTree(file=temp_xml_path)
-    root: Element = tree.getroot()
+    assert_xml_result(xml_generator=xml_generator, xsd_path=test_schema_file_path, xml_path=temp_xml_path)
+    root: Element = get_xml_root_element(temp_xml_path)
     assert root.get('priority') == 'normal'
     items: Element | None = root.find('Items')
     assert items is not None
