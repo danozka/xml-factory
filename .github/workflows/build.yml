@@ -35,7 +35,7 @@ jobs:
             platform: windows
             architecture: amd64
             artifact_name: xml-factory-windows-amd64.exe
-            asset_name: xml-factory-windows-amd64.exe
+            asset_name: xml-factory.exe
             pyinstaller_args: --onefile --name xml-factory-windows-amd64
             python-version: ${{ vars.PYTHON_VERSION }}
 
@@ -43,7 +43,7 @@ jobs:
             platform: linux
             architecture: amd64
             artifact_name: xml-factory-linux-amd64
-            asset_name: xml-factory-linux-amd64
+            asset_name: xml-factory
             pyinstaller_args: --onefile --name xml-factory-linux-amd64
             python-version: ${{ vars.PYTHON_VERSION }}
 
@@ -51,7 +51,7 @@ jobs:
             platform: macos
             architecture: amd64
             artifact_name: xml-factory-macos-amd64
-            asset_name: xml-factory-macos-amd64
+            asset_name: xml-factory
             pyinstaller_args: --onefile --name xml-factory-macos-amd64
             python-version: ${{ vars.PYTHON_VERSION }}
 
@@ -59,7 +59,7 @@ jobs:
             platform: macos
             architecture: arm64
             artifact_name: xml-factory-macos-arm64
-            asset_name: xml-factory-macos-arm64
+            asset_name: xml-factory
             pyinstaller_args: --onefile --name xml-factory-macos-arm64 --target-architecture arm64
             python-version: ${{ vars.PYTHON_VERSION }}
 
