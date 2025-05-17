@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ "windows-latest", "ubuntu-latest", "macos-latest" ]
-        python-version: [ ${{ vars.PYTHON_VERSION }} ]
+        python-version: [ "${{ vars.PYTHON_VERSION }}" ]
         include:
           - os: windows-latest
             platform: windows
