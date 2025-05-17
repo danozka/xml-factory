@@ -110,12 +110,14 @@ jobs:
           cp dist/xml-factory-macos-amd64/xml-factory release/macos-amd64/xml-factory
           cp dist/xml-factory-macos-arm64/xml-factory release/macos-arm64/xml-factory
           
-          zip -r xml-factory-windows-amd64.zip release/windows-amd64
-          tar -czf xml-factory-linux-amd64.tar.gz release/linux-amd64
-          zip -r xml-factory-macos-amd64.zip release/macos-amd64
-          tar -czf xml-factory-macos-amd64.tar.gz release/macos-amd64
-          zip -r xml-factory-macos-arm64.zip release/macos-arm64
-          tar -czf xml-factory-macos-arm64.tar.gz release/macos-arm64
+          cd release
+          zip -r xml-factory-windows-amd64.zip windows-amd64
+          tar -czf xml-factory-linux-amd64.tar.gz linux-amd64
+          zip -r xml-factory-macos-amd64.zip macos-amd64
+          tar -czf xml-factory-macos-amd64.tar.gz macos-amd64
+          zip -r xml-factory-macos-arm64.zip macos-arm64
+          tar -czf xml-factory-macos-arm64.tar.gz macos-arm64
+          cd ..
 
       - name: Get current date
         id: date
@@ -125,7 +127,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ steps.date.outputs.date }}
+          name: ${{ steps.date.outputs.date }}
           tag_name: release-${{ steps.date.outputs.date }}-${{ github.run_number }}
           draft: false
           prerelease: false
