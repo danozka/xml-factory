@@ -30,8 +30,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ "windows-latest", "ubuntu-latest", "macos-latest" ]
-        python-version: [ "${{ vars.PYTHON_VERSION }}" ]
         include:
           - os: windows-latest
             platform: windows
@@ -39,6 +37,7 @@ jobs:
             artifact_name: xml-factory-windows-amd64.exe
             asset_name: xml-factory-windows-amd64.exe
             pyinstaller_args: --onefile --name xml-factory-windows-amd64
+            python-version: ${{ vars.PYTHON_VERSION }}
 
           - os: ubuntu-latest
             platform: linux
@@ -46,6 +45,7 @@ jobs:
             artifact_name: xml-factory-linux-amd64
             asset_name: xml-factory-linux-amd64
             pyinstaller_args: --onefile --name xml-factory-linux-amd64
+            python-version: ${{ vars.PYTHON_VERSION }}
 
           - os: macos-latest
             platform: macos
@@ -53,6 +53,7 @@ jobs:
             artifact_name: xml-factory-macos-amd64
             asset_name: xml-factory-macos-amd64
             pyinstaller_args: --onefile --name xml-factory-macos-amd64
+            python-version: ${{ vars.PYTHON_VERSION }}
 
           - os: macos-latest
             platform: macos
@@ -60,6 +61,7 @@ jobs:
             artifact_name: xml-factory-macos-arm64
             asset_name: xml-factory-macos-arm64
             pyinstaller_args: --onefile --name xml-factory-macos-arm64 --target-architecture arm64
+            python-version: ${{ vars.PYTHON_VERSION }}
 
     steps:
     - uses: actions/checkout@v4
