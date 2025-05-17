@@ -22,6 +22,7 @@ up down the line
 - Getting new team members up to speed without *can you send me a sample file?*
 
 ## How it works
+- Download latest release
 - Point to your XSD file
 - Choose your settings
 - Plug in custom value patterns via JSON if needed

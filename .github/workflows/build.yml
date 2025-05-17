@@ -3,8 +3,6 @@ name: Build and Package Application
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   test:
@@ -87,3 +85,34 @@ jobs:
       with:
         name: ${{ matrix.artifact_name }}
         path: dist/${{ matrix.asset_name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+      
+      - name: Display structure of downloaded files
+        run: ls -R dist/
+      
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.date.outputs.date }}
+          tag_name: release-${{ steps.date.outputs.date }}-${{ github.run_number }}
+          draft: false
+          prerelease: false
+          files: |
+            dist/xml-factory-windows-amd64/xml-factory.exe
+            dist/xml-factory-linux-amd64/xml-factory
+            dist/xml-factory-macos-amd64/xml-factory
+            dist/xml-factory-macos-arm64/xml-factory
+          generate_release_notes: true
