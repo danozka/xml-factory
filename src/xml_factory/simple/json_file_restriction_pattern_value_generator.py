@@ -31,7 +31,7 @@ class JsonFileRestrictionPatternValueGenerator(IRestrictionPatternValueGenerator
             return self._pattern_values[restriction.pattern]
         else:
             prompt: str = (
-                f'[{restriction.name}] Input {restriction.base_type} for the regular expression '
+                f'[{restriction.name}] Input {restriction.base_type.name} for the regular expression '
                 f'\'{restriction.pattern}\''
             )
             if restriction.length is not None:

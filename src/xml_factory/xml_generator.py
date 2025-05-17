@@ -35,7 +35,7 @@ class XmlGenerator:
     _ENCODING: str = 'utf-8'
     _EXIT_CODE_SUCCESS: int  = 0
     _EXIT_CODE_FAILURE: int  = 1
-    _INDENT_SPACES: int = 4
+    _INDENT_SPACES: int = 2
     _log: Logger = logging.getLogger(__name__)
     _group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter
     _restriction_pattern_value_generator: IRestrictionPatternValueGenerator
