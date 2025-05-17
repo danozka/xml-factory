@@ -2,9 +2,9 @@ name: Build and Package Application
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   test:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ "windows-latest", "ubuntu-latest", "macos-latest" ]
         python-version: [ ${{ vars.PYTHON_VERSION }} ]
         include:
           - os: windows-latest
