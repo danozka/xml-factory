@@ -110,13 +110,12 @@ jobs:
           cp dist/xml-factory-macos-amd64/xml-factory release/macos-amd64/xml-factory
           cp dist/xml-factory-macos-arm64/xml-factory release/macos-arm64/xml-factory
           
-          # Create ZIP archives for each platform
-          cd release
-          zip -r xml-factory-windows-amd64.zip windows-amd64
-          zip -r xml-factory-linux-amd64.zip linux-amd64
-          zip -r xml-factory-macos-amd64.zip macos-amd64
-          zip -r xml-factory-macos-arm64.zip macos-arm64
-          cd ..
+          zip -r xml-factory-windows-amd64.zip release/windows-amd64
+          tar -czf xml-factory-linux-amd64.tar.gz release/linux-amd64
+          zip -r xml-factory-macos-amd64.zip release/macos-amd64
+          tar -czf xml-factory-macos-amd64.tar.gz release/macos-amd64
+          zip -r xml-factory-macos-arm64.zip release/macos-arm64
+          tar -czf xml-factory-macos-arm64.tar.gz release/macos-arm64
 
       - name: Get current date
         id: date
@@ -132,7 +131,9 @@ jobs:
           prerelease: false
           files: |
             release/xml-factory-windows-amd64.zip
-            release/xml-factory-linux-amd64.zip
+            release/xml-factory-linux-amd64.tar.gz
             release/xml-factory-macos-amd64.zip
+            release/xml-factory-macos-amd64.tar.gz
             release/xml-factory-macos-arm64.zip
+            release/xml-factory-macos-arm64.tar.gz
           generate_release_notes: true
