@@ -101,62 +101,18 @@ jobs:
       - name: Get current date
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      
-      - name: Create Release
+
+      - name: Create release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
+          name: Release ${{ steps.date.outputs.date }}
           tag_name: release-${{ steps.date.outputs.date }}-${{ github.run_number }}
-          release_name: Release ${{ steps.date.outputs.date }}
           draft: false
           prerelease: false
-          body: |
-            Automated release created by GitHub Actions.
-            
-            This release contains built executables for:
-            - Windows (64-bit)
-            - Linux (64-bit)
-            - macOS (Intel/AMD64)
-            - macOS (Apple Silicon/ARM64)
-    
-      - name: Upload Windows Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/xml-factory-windows-amd64/xml-factory.exe
-          asset_name: xml-factory.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Linux Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/xml-factory-linux-amd64/xml-factory
-          asset_name: xml-factory
-          asset_content_type: application/octet-stream
-
-      - name: Upload macOS AMD64 Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/xml-factory-macos-amd64/xml-factory
-          asset_name: xml-factory
-          asset_content_type: application/octet-stream
-
-      - name: Upload macOS ARM64 Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/xml-factory-macos-arm64/xml-factory
-          asset_name: xml-factory
-          asset_content_type: application/octet-stream
+          files: |
+            dist/xml-factory-windows-amd64/xml-factory.exe
+            dist/xml-factory-linux-amd64/xml-factory
+            dist/xml-factory-macos-amd64/xml-factory
+            dist/xml-factory-macos-arm64/xml-factory
+          generate_release_notes: true
