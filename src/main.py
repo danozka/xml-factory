@@ -5,7 +5,6 @@ from pathlib import Path
 import typer
 from typing_extensions import Annotated
 
-from json_file_restriction_pattern_value_generator import JsonFileRestrictionPatternValueGenerator
 from xml_factory import (
     GroupContentAtLeastOneNumberOfOccurrencesGetter,
     GroupContentMaxNumberOfOccurrencesGetter,
@@ -13,6 +12,7 @@ from xml_factory import (
     GroupContentRandomNumberOfOccurrencesGetter,
     IGroupContentNumberOfOccurrencesGetter,
     IRestrictionValueGenerator,
+    JsonFileRestrictionPatternValueGenerator,
     RestrictionMaxValueGenerator,
     RestrictionMinValueGenerator,
     RestrictionRandomValueGenerator,

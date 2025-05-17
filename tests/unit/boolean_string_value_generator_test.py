@@ -1,10 +1,24 @@
+import pytest
+
 from xml_factory.simple.boolean_string_value_generator import BooleanStringValueGenerator
 
 
-def test_generate_random_boolean_string_value() -> None:
-    boolean_string_value_generator: BooleanStringValueGenerator = BooleanStringValueGenerator()
-    results = set()
-    for _ in range(100):
-        results.add(boolean_string_value_generator.generate_random_boolean_string_value())
+@pytest.fixture
+def generator() -> BooleanStringValueGenerator:
+    return BooleanStringValueGenerator()
+
+
+def test_generate_random_boolean_string_value(generator: BooleanStringValueGenerator) -> None:
+    result: str = generator.generate_random_boolean_string_value()
+    assert result in ['true', 'false']
+
+
+def test_multiple_calls_can_return_different_values(generator: BooleanStringValueGenerator) -> None:
+    results: set[str] = set()
+    for _ in range(1000):
+        results.add(generator.generate_random_boolean_string_value())
+        if len(results) == 2:
+            break
     assert len(results) == 2
-    assert results == {'true', 'false'}
+    assert 'true' in results
+    assert 'false' in results

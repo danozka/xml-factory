@@ -1,21 +1,22 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
+from xmlschema.aliases import AtomicValueType
 
 from xml_factory.domain.base_type import BaseType
-from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
 
 
 @dataclass
 class Restriction:
     name: str
     base_type: BaseType
-    enumeration: list[str] | None = field(default=None, repr=False)
-    pattern: str | None = field(default=None, repr=False)
-    min_length: int | None = field(default=None, repr=False)
-    max_length: int | None = field(default=None, repr=False)
-    min_inclusive: float | None = field(default=None, repr=False)
-    max_inclusive: float | None = field(default=None, repr=False)
-    min_exclusive: float | None = field(default=None, repr=False)
-    max_exclusive: float | None = field(default=None, repr=False)
-    total_digits: int | None = field(default=None, repr=False)
-    fraction_digits: int | None = field(default=None, repr=False)
-    white_space: WhiteSpaceRestriction | None = field(default=None, repr=False)
+    enumeration: list[str] | None = None
+    pattern: str | None = None
+    length: int | None = None
+    min_length: int | None = None
+    max_length: int | None = None
+    min_inclusive: AtomicValueType | None = None
+    max_inclusive: AtomicValueType | None = None
+    min_exclusive: AtomicValueType | None = None
+    max_exclusive: AtomicValueType | None = None
+    total_digits: int | None = None
+    fraction_digits: int | None = None

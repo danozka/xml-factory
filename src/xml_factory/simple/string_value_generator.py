@@ -1,36 +1,23 @@
 import random
-from string import ascii_letters, digits
+from string import ascii_letters
 
 from xml_factory.domain.restriction import Restriction
-from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
 
 
 class StringValueGenerator:
-    @staticmethod
-    def generate_specific_length_string_value(
-        length: int,
-        white_space_restriction: WhiteSpaceRestriction | None = None
-    ) -> str:
-        result: str = ''.join(random.choices(population=(ascii_letters + digits), k=length))
-        if white_space_restriction == WhiteSpaceRestriction.replace:
-            result = result.replace(' ', '_')
-        elif white_space_restriction == WhiteSpaceRestriction.collapse:
-            result = ' '.join(result.split())
-        return result
+    RANDOM_MIN_LENGTH: int = 10
+    RANDOM_MAX_LENGTH: int = 30
 
     @staticmethod
-    def generate_random_string_value(restriction: Restriction) -> str:
-        result: str
-        min_length: int | None = restriction.min_length
-        max_length: int | None = restriction.max_length
-        if min_length is None:
-            min_length = 1
-        if max_length is None:
-            max_length = 10
-        length: int = random.randint(a=min_length, b=max_length)
-        result = ''.join(random.choices(population=(ascii_letters + digits), k=length))
-        if restriction.white_space == WhiteSpaceRestriction.replace:
-            result = result.replace(' ', '_')
-        elif restriction.white_space == WhiteSpaceRestriction.collapse:
-            result = ' '.join(result.split())
-        return result
+    def generate_specific_length_string_value(length: int) -> str:
+        return ''.join(random.choices(population=ascii_letters, k=length))
+
+    def generate_random_string_value(self, restriction: Restriction) -> str:
+        if restriction.length is not None:
+            return self.generate_specific_length_string_value(restriction.length)
+        min_length: int = restriction.min_length if restriction.min_length is not None else self.RANDOM_MIN_LENGTH
+        max_length: int = restriction.max_length if restriction.max_length is not None else self.RANDOM_MAX_LENGTH
+        if max_length < min_length:
+            max_length = min_length
+        random_length: int = random.randint(a=min_length, b=max_length)
+        return self.generate_specific_length_string_value(random_length)

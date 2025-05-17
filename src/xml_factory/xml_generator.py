@@ -7,12 +7,12 @@ from xml.etree.ElementTree import Element, ElementTree, indent
 from xmlschema.validators import (
     XMLSchema,
     XMLSchemaValidationError,
-    XsdAtomicBuiltin,
     XsdAttribute,
     XsdElement,
     XsdFacet,
     XsdFractionDigitsFacet,
     XsdGroup,
+    XsdLengthFacet,
     XsdMaxExclusiveFacet,
     XsdMaxInclusiveFacet,
     XsdMaxLengthFacet,
@@ -21,14 +21,12 @@ from xmlschema.validators import (
     XsdMinLengthFacet,
     XsdPatternFacets,
     XsdSimpleType,
-    XsdTotalDigitsFacet,
-    XsdWhiteSpaceFacet
+    XsdTotalDigitsFacet
 )
 
 from xml_factory.complex.i_group_content_number_of_occurrences_getter import IGroupContentNumberOfOccurrencesGetter
 from xml_factory.domain.base_type import BaseType
 from xml_factory.domain.restriction import Restriction
-from xml_factory.domain.white_space_restriction import WhiteSpaceRestriction
 from xml_factory.simple.i_restriction_pattern_value_generator import IRestrictionPatternValueGenerator
 from xml_factory.simple.i_restriction_value_generator import IRestrictionValueGenerator
 
@@ -107,39 +105,49 @@ class XmlGenerator:
         else:
             restriction: Restriction = Restriction(
                 name=xsd_simple_type.local_name,
-                base_type=BaseType(
-                    xsd_simple_type.local_name
-                    if isinstance(xsd_simple_type, XsdAtomicBuiltin)
-                    else xsd_simple_type.base_type.local_name
-                ),
+                base_type=self._get_xml_simple_type_base_type(xsd_simple_type),
                 enumeration=xsd_simple_type.enumeration
             )
             xmlschema_facet: XsdFacet
             for facet in xsd_simple_type.facets.values():
                 if isinstance(facet, XsdFractionDigitsFacet):
                     restriction.fraction_digits = facet.value
+                elif isinstance(facet, XsdLengthFacet):
+                    restriction.length = facet.value
                 elif isinstance(facet, XsdMaxExclusiveFacet):
-                    restriction.max_exclusive = float(facet.value)
+                    restriction.max_exclusive = facet.value
                 elif isinstance(facet, XsdMaxInclusiveFacet):
-                    restriction.max_inclusive = float(facet.value)
+                    restriction.max_inclusive = facet.value
                 elif isinstance(facet, XsdMaxLengthFacet):
                     restriction.max_length = facet.value
                 elif isinstance(facet, XsdMinExclusiveFacet):
-                    restriction.min_exclusive = float(facet.value)
+                    restriction.min_exclusive = facet.value
                 elif isinstance(facet, XsdMinInclusiveFacet):
-                    restriction.min_inclusive = float(facet.value)
+                    restriction.min_inclusive = facet.value
                 elif isinstance(facet, XsdMinLengthFacet):
-                    restriction.min_length = int(facet.value)
+                    restriction.min_length = facet.value
                 elif isinstance(facet, XsdPatternFacets):
                     restriction.pattern = facet.regexps[0]
                 elif isinstance(facet, XsdTotalDigitsFacet):
                     restriction.total_digits = facet.value
-                elif isinstance(facet, XsdWhiteSpaceFacet):
-                    restriction.white_space = WhiteSpaceRestriction(facet.value)
-            if restriction.pattern is not None:
+            if restriction.enumeration is not None:
+                return random.choice(restriction.enumeration)
+            elif restriction.pattern is not None:
                 return self._restriction_pattern_value_generator.generate_restriction_pattern_value(restriction)
             else:
                 return self._restriction_value_generator.generate_restriction_value(restriction)
+
+    @staticmethod
+    def _get_xml_simple_type_base_type(xsd_simple_type: XsdSimpleType) -> BaseType:
+        python_type: type
+        if xsd_simple_type.is_restriction():
+            current_type: XsdSimpleType = xsd_simple_type
+            while current_type.base_type.is_restriction():
+                current_type = current_type.base_type
+            python_type = xsd_simple_type.base_type.python_type
+        else:
+            python_type = xsd_simple_type.python_type
+        return BaseType(python_type)
 
     def _generate_xml_complex_type_element(self, xsd_element: XsdElement) -> Element:
         xml_element: Element = Element(xsd_element.local_name)
@@ -153,7 +161,7 @@ class XmlGenerator:
             if xsd_attribute.fixed is not None:
                 xml_element.attrib[attribute_name] = xsd_attribute.fixed
             elif xsd_attribute.default is not None and self._force_default_value:
-                xml_element.attrib[attribute_name] = xsd_element.default
+                xml_element.attrib[attribute_name] = xsd_attribute.default
             else:
                 xml_element.attrib[attribute_name] = self._generate_xml_simple_type_value(xsd_attribute.type)
         return xml_element
