@@ -48,6 +48,39 @@
     </xs:complexType>
   </xs:element>
 
+  <!-- Base Address Type for inheritance -->
+  <xs:complexType name="BaseAddressType">
+    <xs:sequence>
+      <xs:element name="Street" type="xs:string"/>
+      <xs:element name="City" type="xs:string"/>
+      <xs:element name="ZipCode" type="ZipCodeType"/>
+      <xs:element name="Country" type="CountryType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- US Address extends BaseAddressType -->
+  <xs:complexType name="USAddressType">
+    <xs:complexContent>
+      <xs:extension base="BaseAddressType">
+        <xs:sequence>
+          <xs:element name="State" type="StateType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- International Address extends BaseAddressType -->
+  <xs:complexType name="InternationalAddressType">
+    <xs:complexContent>
+      <xs:extension base="BaseAddressType">
+        <xs:sequence>
+          <xs:element name="Province" type="xs:string"/>
+          <xs:element name="PostalCode" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <!-- Customer information -->
   <xs:element name="Customer">
     <xs:complexType>
@@ -71,13 +104,9 @@
         </xs:element>
         <xs:element name="Address">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Street" type="xs:string"/>
-              <xs:element name="City" type="xs:string"/>
-              <xs:element name="State" type="StateType"/>
-              <xs:element name="ZipCode" type="ZipCodeType"/>
-              <xs:element name="Country" type="CountryType"/>
-            </xs:sequence>
+            <xs:complexContent>
+              <xs:extension base="USAddressType"/>
+            </xs:complexContent>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -109,35 +138,64 @@
     </xs:complexType>
   </xs:element>
 
+  <!-- Base Payment Method Type -->
+  <xs:complexType name="PaymentMethodType">
+    <xs:sequence>
+      <xs:element name="Reference" type="xs:string"/>
+      <xs:element name="TransactionDate" type="xs:date"/>
+    </xs:sequence>
+    <xs:attribute name="totalAmount" type="PriceType" use="required"/>
+  </xs:complexType>
+
   <!-- Payment information -->
   <xs:element name="Payment">
     <xs:complexType>
       <xs:choice>
         <xs:element name="CreditCard">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="CardNumber" type="CreditCardType"/>
-              <xs:element name="ExpirationDate" type="xs:gYearMonth"/>
-              <xs:element name="CardholderName" type="xs:string"/>
-            </xs:sequence>
-            <xs:attribute name="type">
-              <xs:simpleType>
-                <xs:restriction base="xs:string">
-                  <xs:enumeration value="Visa"/>
-                  <xs:enumeration value="MasterCard"/>
-                  <xs:enumeration value="Amex"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
+            <xs:complexContent>
+              <xs:extension base="PaymentMethodType">
+                <xs:sequence>
+                  <xs:element name="CardNumber" type="CreditCardType"/>
+                  <xs:element name="ExpirationDate" type="xs:gYearMonth"/>
+                  <xs:element name="CardholderName" type="xs:string"/>
+                </xs:sequence>
+                <xs:attribute name="type">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                      <xs:enumeration value="Visa"/>
+                      <xs:enumeration value="MasterCard"/>
+                      <xs:enumeration value="Amex"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:complexContent>
           </xs:complexType>
         </xs:element>
         <xs:element name="BankTransfer">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="AccountNumber" type="AccountNumberType"/>
-              <xs:element name="BankCode" type="BankCodeType"/>
-              <xs:element name="Reference" type="xs:string"/>
-            </xs:sequence>
+            <xs:complexContent>
+              <xs:extension base="PaymentMethodType">
+                <xs:sequence>
+                  <xs:element name="AccountNumber" type="AccountNumberType"/>
+                  <xs:element name="BankCode" type="BankCodeType"/>
+                </xs:sequence>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="PayPal">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:restriction base="PaymentMethodType">
+                <xs:sequence>
+                  <xs:element name="Reference" type="xs:string"/>
+                  <xs:element name="TransactionDate" type="xs:date"/>
+                </xs:sequence>
+                <xs:attribute name="totalAmount" type="PriceType" use="required"/>
+              </xs:restriction>
+            </xs:complexContent>
           </xs:complexType>
         </xs:element>
       </xs:choice>
@@ -146,10 +204,10 @@
           <xs:restriction base="xs:string">
             <xs:enumeration value="credit_card"/>
             <xs:enumeration value="bank_transfer"/>
+            <xs:enumeration value="paypal"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="totalAmount" type="PriceType" use="required"/>
     </xs:complexType>
   </xs:element>
 
