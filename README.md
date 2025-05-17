@@ -26,7 +26,8 @@ up down the line
 - Point to your XSD file
 - Choose your settings
 - Plug in custom value patterns via JSON if needed
-- Run. Get schema-compliant XML instantly
+- Run!
+- Get schema-compliant XML instantly
 
 ```bash
 xml-factory --xsd my-schema.xsd --xml sample.xml --root MyRootElem
@@ -41,8 +42,15 @@ xml-factory --help
 ## Key features
 - **Full occurrence control** — Force min/max, require at least one, or randomize, your call
 - **Smart value generation** — Default, min, max, or random restriction-compliant values
-- **Pattern-aware** — Drop in your own value patterns as needed
+- **Pattern-aware** — Drop in your own value patterns as needed 
+(check [Regular expressions management](#regular-expressions-management) for more info)
 - **CLI simplicity** — Fast, deterministic, and effortless
+
+## Regular expressions management
+Generating a random value that validates a regular expression is tricky. That is why this tool will ask for your input
+whenever a pattern is required to be filled. To avoid this manual step, you can generate your own JSON library with 
+known regular expressions and the values to be used. Pass it to CLI using `--patterns-file` argument and you are ready 
+to go. Check this [example](./tests/fixtures/files/test_patterns.json) file to have an idea.
 
 ## Current limitations
 - `<xsd:list>` and `<xsd:union>` elements not supported
