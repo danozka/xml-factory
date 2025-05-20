@@ -53,5 +53,4 @@ known regular expressions and the values to be used. Pass it to CLI using `--pat
 to go. Check this [example](./tests/fixtures/files/test_patterns.json) file to have an idea.
 
 ## Current limitations
-- `<xsd:list>` and `<xsd:union>` elements not supported
 - `<xsd:duration>` and `<xsd:QName>` data types not supported
