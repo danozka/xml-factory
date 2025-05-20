@@ -9,6 +9,9 @@ from xml_factory import (
     GroupContentMaxNumberOfOccurrencesGetter,
     GroupContentMinNumberOfOccurrencesGetter,
     GroupContentRandomNumberOfOccurrencesGetter,
+    ListMaxNumberOfItemsGetter,
+    ListMinNumberOfItemsGetter,
+    ListRandomNumberOfItemsGetter,
     JsonFileRestrictionPatternValueGenerator,
     RestrictionMaxValueGenerator,
     RestrictionMinValueGenerator,
@@ -40,6 +43,7 @@ def get_xml_root_element(xml_path: Path) -> Element:
 def test_generate_xml_random(test_schema_file_path: Path, test_patterns_file_path: Path, temp_xml_path: Path) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs=3),
+        list_number_of_items_getter=ListRandomNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
@@ -61,6 +65,7 @@ def test_generate_xml_min_occurs(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentMinNumberOfOccurrencesGetter(),
+        list_number_of_items_getter=ListRandomNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
@@ -81,6 +86,7 @@ def test_generate_xml_max_occurs(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentMaxNumberOfOccurrencesGetter(unbounded_occurs=5),
+        list_number_of_items_getter=ListRandomNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
@@ -101,6 +107,7 @@ def test_generate_xml_at_least_one(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentAtLeastOneNumberOfOccurrencesGetter(),
+        list_number_of_items_getter=ListRandomNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=False
@@ -118,6 +125,7 @@ def test_generate_xml_min_values(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs=3),
+        list_number_of_items_getter=ListMinNumberOfItemsGetter(),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionMinValueGenerator(),
         force_default_value=False
@@ -139,6 +147,7 @@ def test_generate_xml_max_values(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs=3),
+        list_number_of_items_getter=ListMaxNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionMaxValueGenerator(),
         force_default_value=False
@@ -160,6 +169,7 @@ def test_generate_xml_force_default(
 ) -> None:
     xml_generator: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs=3),
+        list_number_of_items_getter=ListRandomNumberOfItemsGetter(unbounded_length=3),
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(test_patterns_file_path),
         restriction_value_generator=RestrictionRandomValueGenerator(),
         force_default_value=True

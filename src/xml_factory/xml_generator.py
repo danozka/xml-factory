@@ -13,6 +13,7 @@ from xmlschema.validators import (
     XsdFractionDigitsFacet,
     XsdGroup,
     XsdLengthFacet,
+    XsdList,
     XsdMaxExclusiveFacet,
     XsdMaxInclusiveFacet,
     XsdMaxLengthFacet,
@@ -28,6 +29,7 @@ from xmlschema.validators import (
 from xml_factory.complex.i_group_content_number_of_occurrences_getter import IGroupContentNumberOfOccurrencesGetter
 from xml_factory.domain.base_type import BaseType
 from xml_factory.domain.restriction import Restriction
+from xml_factory.simple.i_list_number_of_items_getter import IListNumberOfItemsGetter
 from xml_factory.simple.i_restriction_pattern_value_generator import IRestrictionPatternValueGenerator
 from xml_factory.simple.i_restriction_value_generator import IRestrictionValueGenerator
 
@@ -39,6 +41,7 @@ class XmlGenerator:
     _INDENT_SPACES: int = 2
     _log: Logger = logging.getLogger(__name__)
     _group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter
+    _list_number_of_items_getter: IListNumberOfItemsGetter
     _restriction_pattern_value_generator: IRestrictionPatternValueGenerator
     _restriction_value_generator: IRestrictionValueGenerator
     _force_default_value: bool
@@ -46,11 +49,13 @@ class XmlGenerator:
     def __init__(
         self,
         group_content_number_of_occurrences_getter: IGroupContentNumberOfOccurrencesGetter,
+        list_number_of_items_getter: IListNumberOfItemsGetter,
         restriction_pattern_value_generator: IRestrictionPatternValueGenerator,
         restriction_value_generator: IRestrictionValueGenerator,
         force_default_value: bool = False
     ) -> None:
         self._group_content_number_of_occurrences_getter = group_content_number_of_occurrences_getter
+        self._list_number_of_items_getter = list_number_of_items_getter
         self._restriction_pattern_value_generator = restriction_pattern_value_generator
         self._restriction_value_generator = restriction_value_generator
         self._force_default_value = force_default_value
@@ -100,7 +105,15 @@ class XmlGenerator:
 
     def _generate_xml_simple_type_value(self, xsd_simple_type: XsdSimpleType) -> str:
         if xsd_simple_type.is_list():
-            raise NotImplementedError(f'List simple type {xsd_simple_type} not implemented')
+            list_restriction: Restriction = self._get_xml_simple_type_restriction(xsd_simple_type)
+            list_number_of_items: int = self._list_number_of_items_getter.get_list_number_of_items(list_restriction)
+            current_type: XsdSimpleType = xsd_simple_type
+            while not isinstance(current_type, XsdList):
+                current_type = current_type.base_type
+            xsd_list_item_simple_type: XsdSimpleType = current_type.item_type
+            return ' '.join(
+                [self._generate_xml_simple_type_value(xsd_list_item_simple_type) for _ in range(list_number_of_items)]
+            )
         elif xsd_simple_type.is_union():
             xsd_simple_type: XsdUnion
             selected_xsd_simple_type: XsdSimpleType = random.choice(xsd_simple_type.member_types)

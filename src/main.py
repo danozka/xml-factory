@@ -11,8 +11,12 @@ from xml_factory import (
     GroupContentMinNumberOfOccurrencesGetter,
     GroupContentRandomNumberOfOccurrencesGetter,
     IGroupContentNumberOfOccurrencesGetter,
+    IListNumberOfItemsGetter,
     IRestrictionValueGenerator,
     JsonFileRestrictionPatternValueGenerator,
+    ListMaxNumberOfItemsGetter,
+    ListMinNumberOfItemsGetter,
+    ListRandomNumberOfItemsGetter,
     RestrictionMaxValueGenerator,
     RestrictionMinValueGenerator,
     RestrictionRandomValueGenerator,
@@ -29,6 +33,10 @@ def main(
         str,
         typer.Option(help='Application logging level: DEBUG, INFO, WARNING, ERROR or CRITICAL')
     ] = 'INFO',
+    lists_unbounded_length: Annotated[
+        int,
+        typer.Option(default='--lists-unbounded-length', help='Number of items inside unbounded lists')
+    ] = 3,
     unbounded_occurs: Annotated[
         int,
         typer.Option(default='--unbounded-occurs', help='Number of occurrences for unbounded components')
@@ -86,15 +94,20 @@ def main(
         group_content_number_of_occurrences_getter = GroupContentAtLeastOneNumberOfOccurrencesGetter()
     else:
         group_content_number_of_occurrences_getter = GroupContentRandomNumberOfOccurrencesGetter(unbounded_occurs)
+    list_number_of_items_getter: IListNumberOfItemsGetter
     restriction_value_generator: IRestrictionValueGenerator
     if force_min_value:
+        list_number_of_items_getter = ListMinNumberOfItemsGetter()
         restriction_value_generator = RestrictionMinValueGenerator()
     elif force_max_value:
+        list_number_of_items_getter = ListMaxNumberOfItemsGetter(lists_unbounded_length)
         restriction_value_generator = RestrictionMaxValueGenerator()
     else:
+        list_number_of_items_getter = ListRandomNumberOfItemsGetter(lists_unbounded_length)
         restriction_value_generator = RestrictionRandomValueGenerator()
     xml_factory: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=group_content_number_of_occurrences_getter,
+        list_number_of_items_getter=list_number_of_items_getter,
         restriction_pattern_value_generator=JsonFileRestrictionPatternValueGenerator(patterns_file),
         restriction_value_generator=restriction_value_generator,
         force_default_value=force_default_value

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
-  <!-- Root element -->
   <xs:element name="PurchaseOrder">
     <xs:complexType>
       <xs:sequence>
@@ -26,7 +25,6 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Order information -->
   <xs:element name="OrderInfo">
     <xs:complexType>
       <xs:sequence>
@@ -49,7 +47,12 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Order reference type -->
+  <xs:element name="RelatedOrderIDs">
+    <xs:simpleType>
+      <xs:list itemType="OrderNumberType"/>
+    </xs:simpleType>
+  </xs:element>
+
   <xs:complexType name="OrderReferenceComplexType">
     <xs:sequence>
       <xs:element name="ReferenceValue" type="OrderReferenceType"/>
@@ -59,7 +62,6 @@
     <xs:attribute name="isPrimary" type="xs:boolean" default="false"/>
   </xs:complexType>
 
-  <!-- Base Address Type for inheritance -->
   <xs:complexType name="BaseAddressType">
     <xs:sequence>
       <xs:element name="Street" type="xs:string"/>
@@ -69,7 +71,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <!-- US Address extends BaseAddressType -->
   <xs:complexType name="USAddressType">
     <xs:complexContent>
       <xs:extension base="BaseAddressType">
@@ -80,7 +81,6 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <!-- International Address extends BaseAddressType -->
   <xs:complexType name="InternationalAddressType">
     <xs:complexContent>
       <xs:extension base="BaseAddressType">
@@ -92,7 +92,6 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <!-- Customer information -->
   <xs:element name="Customer">
     <xs:complexType>
       <xs:sequence>
@@ -126,7 +125,6 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Items ordered -->
   <xs:element name="Items">
     <xs:complexType>
       <xs:sequence>
@@ -139,6 +137,7 @@
               <xs:element name="Price" type="PriceType"/>
               <xs:element name="Quantity" type="QuantityType"/>
               <xs:element name="Discount" type="DiscountType" minOccurs="0"/>
+              <xs:element name="Tags" type="TagListType" minOccurs="0"/>
             </xs:sequence>
             <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
             <xs:attribute name="available" type="xs:boolean" default="true"/>
@@ -149,7 +148,6 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Base Payment Method Type -->
   <xs:complexType name="PaymentMethodType">
     <xs:sequence>
       <xs:element name="Reference" type="xs:string"/>
@@ -158,7 +156,6 @@
     <xs:attribute name="totalAmount" type="PriceType" use="required"/>
   </xs:complexType>
 
-  <!-- Payment information -->
   <xs:element name="Payment">
     <xs:complexType>
       <xs:choice>
@@ -222,7 +219,6 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Shipping information -->
   <xs:element name="Shipping">
     <xs:complexType>
       <xs:sequence>
@@ -238,14 +234,13 @@
         <xs:element name="TrackingNumber" type="TrackingNumberType" minOccurs="0"/>
         <xs:element name="Cost" type="PriceType"/>
         <xs:element name="EstimatedDelivery" type="xs:date" minOccurs="0"/>
+        <xs:element name="Dimensions" type="FixedLengthDimensionsType" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <!-- Notes -->
   <xs:element name="Notes" type="xs:string"/>
 
-  <!-- Simple Type Definitions -->
   <xs:simpleType name="OrderNumberType">
     <xs:restriction base="xs:string">
       <xs:pattern value="ORD-[0-9]{6}"/>
@@ -373,6 +368,33 @@
         <xs:restriction base="CustomerIDType"/>
       </xs:simpleType>
     </xs:union>
+  </xs:simpleType>
+
+  <xs:simpleType name="TagType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="20"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TagListType">
+    <xs:list itemType="TagType"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="PositiveDimensionType">
+    <xs:restriction base="xs:decimal">
+      <xs:minExclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DimensionsType">
+    <xs:list itemType="PositiveDimensionType"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="FixedLengthDimensionsType">
+    <xs:restriction base="DimensionsType">
+      <xs:length value="3"/>
+    </xs:restriction>
   </xs:simpleType>
 
 </xs:schema>
