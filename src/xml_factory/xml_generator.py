@@ -21,7 +21,8 @@ from xmlschema.validators import (
     XsdMinLengthFacet,
     XsdPatternFacets,
     XsdSimpleType,
-    XsdTotalDigitsFacet
+    XsdTotalDigitsFacet,
+    XsdUnion
 )
 
 from xml_factory.complex.i_group_content_number_of_occurrences_getter import IGroupContentNumberOfOccurrencesGetter
@@ -101,35 +102,11 @@ class XmlGenerator:
         if xsd_simple_type.is_list():
             raise NotImplementedError(f'List simple type {xsd_simple_type} not implemented')
         elif xsd_simple_type.is_union():
-            raise NotImplementedError(f'Union simple type {xsd_simple_type} not implemented')
+            xsd_simple_type: XsdUnion
+            selected_xsd_simple_type: XsdSimpleType = random.choice(xsd_simple_type.member_types)
+            return self._generate_xml_simple_type_value(selected_xsd_simple_type)
         else:
-            restriction: Restriction = Restriction(
-                name=xsd_simple_type.local_name,
-                base_type=self._get_xml_simple_type_base_type(xsd_simple_type),
-                enumeration=xsd_simple_type.enumeration
-            )
-            xmlschema_facet: XsdFacet
-            for facet in xsd_simple_type.facets.values():
-                if isinstance(facet, XsdFractionDigitsFacet):
-                    restriction.fraction_digits = facet.value
-                elif isinstance(facet, XsdLengthFacet):
-                    restriction.length = facet.value
-                elif isinstance(facet, XsdMaxExclusiveFacet):
-                    restriction.max_exclusive = facet.value
-                elif isinstance(facet, XsdMaxInclusiveFacet):
-                    restriction.max_inclusive = facet.value
-                elif isinstance(facet, XsdMaxLengthFacet):
-                    restriction.max_length = facet.value
-                elif isinstance(facet, XsdMinExclusiveFacet):
-                    restriction.min_exclusive = facet.value
-                elif isinstance(facet, XsdMinInclusiveFacet):
-                    restriction.min_inclusive = facet.value
-                elif isinstance(facet, XsdMinLengthFacet):
-                    restriction.min_length = facet.value
-                elif isinstance(facet, XsdPatternFacets):
-                    restriction.pattern = facet.regexps[0]
-                elif isinstance(facet, XsdTotalDigitsFacet):
-                    restriction.total_digits = facet.value
+            restriction: Restriction = self._get_xml_simple_type_restriction(xsd_simple_type)
             if restriction.enumeration is not None:
                 return random.choice(restriction.enumeration)
             elif restriction.pattern is not None:
@@ -137,17 +114,52 @@ class XmlGenerator:
             else:
                 return self._restriction_value_generator.generate_restriction_value(restriction)
 
+    def _get_xml_simple_type_restriction(self, xsd_simple_type: XsdSimpleType) -> Restriction:
+        restriction: Restriction = Restriction(name=xsd_simple_type.local_name)
+        current_type: XsdSimpleType = xsd_simple_type
+        while current_type.is_restriction():
+            self._update_xml_simple_type_restriction_facets(restriction=restriction, xsd_simple_type=current_type)
+            current_type = current_type.base_type
+        self._update_xml_simple_type_restriction_facets(restriction=restriction, xsd_simple_type=current_type)
+        restriction.base_type = BaseType(current_type.python_type)
+        return restriction
+    
     @staticmethod
-    def _get_xml_simple_type_base_type(xsd_simple_type: XsdSimpleType) -> BaseType:
-        python_type: type
-        if xsd_simple_type.is_restriction():
-            current_type: XsdSimpleType = xsd_simple_type
-            while current_type.base_type.is_restriction():
-                current_type = current_type.base_type
-            python_type = xsd_simple_type.base_type.python_type
-        else:
-            python_type = xsd_simple_type.python_type
-        return BaseType(python_type)
+    def _update_xml_simple_type_restriction_facets(restriction: Restriction, xsd_simple_type: XsdSimpleType) -> None:
+        if restriction.enumeration is None:
+            restriction.enumeration = xsd_simple_type.enumeration
+        facet: XsdFacet
+        for facet in xsd_simple_type.facets.values():
+            if isinstance(facet, XsdFractionDigitsFacet):
+                if restriction.fraction_digits is None:
+                    restriction.fraction_digits = facet.value
+            elif isinstance(facet, XsdLengthFacet):
+                if restriction.length is None:
+                    restriction.length = facet.value
+            elif isinstance(facet, XsdMaxExclusiveFacet):
+                if restriction.max_exclusive is None:
+                    restriction.max_exclusive = facet.value
+            elif isinstance(facet, XsdMaxInclusiveFacet):
+                if restriction.max_inclusive is None:
+                    restriction.max_inclusive = facet.value
+            elif isinstance(facet, XsdMaxLengthFacet):
+                if restriction.max_length is None:
+                    restriction.max_length = facet.value
+            elif isinstance(facet, XsdMinExclusiveFacet):
+                if restriction.min_exclusive is None:
+                    restriction.min_exclusive = facet.value
+            elif isinstance(facet, XsdMinInclusiveFacet):
+                if restriction.min_inclusive is None:
+                    restriction.min_inclusive = facet.value
+            elif isinstance(facet, XsdMinLengthFacet):
+                if restriction.min_length is None:
+                    restriction.min_length = facet.value
+            elif isinstance(facet, XsdPatternFacets):
+                if restriction.pattern is None:
+                    restriction.pattern = facet.regexps[0]
+            elif isinstance(facet, XsdTotalDigitsFacet):
+                if restriction.total_digits is None:
+                    restriction.total_digits = facet.value
 
     def _generate_xml_complex_type_element(self, xsd_element: XsdElement) -> Element:
         xml_element: Element = Element(xsd_element.local_name)

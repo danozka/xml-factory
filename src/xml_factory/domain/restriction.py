@@ -7,8 +7,8 @@ from xml_factory.domain.base_type import BaseType
 
 @dataclass
 class Restriction:
-    name: str
-    base_type: BaseType
+    name: str | None
+    base_type: BaseType | None = None
     enumeration: list[str] | None = None
     pattern: str | None = None
     length: int | None = None

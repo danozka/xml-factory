@@ -31,6 +31,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="OrderNumber" type="OrderNumberType"/>
+        <xs:element name="OrderReference" type="OrderReferenceComplexType"/>
         <xs:element name="OrderDate" type="xs:date"/>
         <xs:element name="ExpectedDeliveryDate" type="xs:date" minOccurs="0"/>
       </xs:sequence>
@@ -47,6 +48,16 @@
       </xs:attribute>
     </xs:complexType>
   </xs:element>
+
+  <!-- Order reference type -->
+  <xs:complexType name="OrderReferenceComplexType">
+    <xs:sequence>
+      <xs:element name="ReferenceValue" type="OrderReferenceType"/>
+      <xs:element name="ReferenceDate" type="xs:date"/>
+      <xs:element name="ReferenceSource" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="isPrimary" type="xs:boolean" default="false"/>
+  </xs:complexType>
 
   <!-- Base Address Type for inheritance -->
   <xs:complexType name="BaseAddressType">
@@ -346,6 +357,22 @@
     <xs:restriction base="xs:string">
       <xs:pattern value="[A-Z]{2}[0-9]{12}"/>
     </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="OrderReferenceType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="OrderNumberType"/>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="REF-[A-Z]{2}[0-9]{4}"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="CustomerIDType"/>
+      </xs:simpleType>
+    </xs:union>
   </xs:simpleType>
 
 </xs:schema>
