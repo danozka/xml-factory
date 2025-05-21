@@ -17,7 +17,6 @@ def test_generate_max_gregorian_month_day_string_value_max_inclusive(
     generator: GregorianMonthDayStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         max_inclusive=GregorianMonthDay(month=5, day=15)
     )
@@ -29,7 +28,6 @@ def test_generate_max_gregorian_month_day_string_value_max_exclusive(
     generator: GregorianMonthDayStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         max_exclusive=GregorianMonthDay(month=6, day=20)
     )
@@ -41,7 +39,6 @@ def test_generate_min_gregorian_month_day_string_value_min_inclusive(
     generator: GregorianMonthDayStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         min_inclusive=GregorianMonthDay(month=3, day=4)
     )
@@ -53,7 +50,6 @@ def test_generate_min_gregorian_month_day_string_value_min_exclusive(
     generator: GregorianMonthDayStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         min_exclusive=GregorianMonthDay(month=4, day=6)
     )
@@ -64,7 +60,7 @@ def test_generate_min_gregorian_month_day_string_value_min_exclusive(
 def test_generate_random_gregorian_month_day_string_value_no_restrictions(
     generator: GregorianMonthDayStringValueGenerator
 ) -> None:
-    restriction: Restriction = Restriction(name='gMonthDayTest', base_type=BaseType(BaseType.gregorian_month_day))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.gregorian_month_day))
     result: str = generator.generate_random_gregorian_month_day_string_value(restriction)
     assert result.startswith('--')
     parts: list[str] = result.split('-')
@@ -85,7 +81,6 @@ def test_generate_random_gregorian_month_day_string_value_with_tz(
 ) -> None:
     tz: Timezone = Timezone(timedelta(hours=5))
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         min_inclusive=GregorianMonthDay(month=2, day=10, tzinfo=tz)
     )
@@ -95,7 +90,6 @@ def test_generate_random_gregorian_month_day_string_value_with_tz(
 
 def test_max_less_than_min(generator: GregorianMonthDayStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gMonthDayTest',
         base_type=BaseType(BaseType.gregorian_month_day),
         min_inclusive=GregorianMonthDay(month=5, day=21),
         max_inclusive=GregorianMonthDay(month=4, day=12)

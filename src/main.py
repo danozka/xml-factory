@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 from typing_extensions import Annotated
 
+from json_patterns import JsonFileRestrictionPatternValueGenerator
 from xml_factory import (
     GroupContentAtLeastOneNumberOfOccurrencesGetter,
     GroupContentMaxNumberOfOccurrencesGetter,
@@ -13,7 +14,6 @@ from xml_factory import (
     IGroupContentNumberOfOccurrencesGetter,
     IListNumberOfItemsGetter,
     IRestrictionValueGenerator,
-    JsonFileRestrictionPatternValueGenerator,
     ListMaxNumberOfItemsGetter,
     ListMinNumberOfItemsGetter,
     ListRandomNumberOfItemsGetter,
@@ -33,9 +33,9 @@ def main(
         str,
         typer.Option(help='Application logging level: DEBUG, INFO, WARNING, ERROR or CRITICAL')
     ] = 'INFO',
-    lists_unbounded_length: Annotated[
+    unbounded_list_length: Annotated[
         int,
-        typer.Option(default='--lists-unbounded-length', help='Number of items inside unbounded lists')
+        typer.Option(default='--unbounded-list-length', help='Number of items inside unbounded lists')
     ] = 3,
     unbounded_occurs: Annotated[
         int,
@@ -100,10 +100,10 @@ def main(
         list_number_of_items_getter = ListMinNumberOfItemsGetter()
         restriction_value_generator = RestrictionMinValueGenerator()
     elif force_max_value:
-        list_number_of_items_getter = ListMaxNumberOfItemsGetter(lists_unbounded_length)
+        list_number_of_items_getter = ListMaxNumberOfItemsGetter(unbounded_list_length)
         restriction_value_generator = RestrictionMaxValueGenerator()
     else:
-        list_number_of_items_getter = ListRandomNumberOfItemsGetter(lists_unbounded_length)
+        list_number_of_items_getter = ListRandomNumberOfItemsGetter(unbounded_list_length)
         restriction_value_generator = RestrictionRandomValueGenerator()
     xml_factory: XmlGenerator = XmlGenerator(
         group_content_number_of_occurrences_getter=group_content_number_of_occurrences_getter,

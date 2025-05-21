@@ -95,7 +95,10 @@ class XmlGenerator:
             elif xsd_element.default is not None and self._force_default_value:
                 xml_element.text = xsd_element.default
             else:
-                xml_element.text = self._generate_xml_simple_type_value(xsd_element.type)
+                xml_element.text = self._generate_xml_simple_type_value(
+                    element_name=xsd_element.local_name,
+                    xsd_simple_type=xsd_element.type
+                )
             self._log.debug(f'Simple type element \'{xsd_element.local_name}\' generated successfully')
         else:
             self._log.debug(f'Generating complex type element \'{xsd_element.local_name}\'')
@@ -103,7 +106,7 @@ class XmlGenerator:
             self._log.debug(f'Complex type element \'{xsd_element.local_name}\' generated successfully')
         return xml_element
 
-    def _generate_xml_simple_type_value(self, xsd_simple_type: XsdSimpleType) -> str:
+    def _generate_xml_simple_type_value(self, element_name: str, xsd_simple_type: XsdSimpleType) -> str:
         if xsd_simple_type.is_list():
             list_restriction: Restriction = self._get_xml_simple_type_restriction(xsd_simple_type)
             list_number_of_items: int = self._list_number_of_items_getter.get_list_number_of_items(list_restriction)
@@ -112,23 +115,35 @@ class XmlGenerator:
                 current_type = current_type.base_type
             xsd_list_item_simple_type: XsdSimpleType = current_type.item_type
             return ' '.join(
-                [self._generate_xml_simple_type_value(xsd_list_item_simple_type) for _ in range(list_number_of_items)]
+                [
+                    self._generate_xml_simple_type_value(
+                        element_name=element_name,
+                        xsd_simple_type=xsd_list_item_simple_type
+                    )
+                    for _ in range(list_number_of_items)
+                ]
             )
         elif xsd_simple_type.is_union():
             xsd_simple_type: XsdUnion
             selected_xsd_simple_type: XsdSimpleType = random.choice(xsd_simple_type.member_types)
-            return self._generate_xml_simple_type_value(selected_xsd_simple_type)
+            return self._generate_xml_simple_type_value(
+                element_name=element_name,
+                xsd_simple_type=selected_xsd_simple_type
+            )
         else:
             restriction: Restriction = self._get_xml_simple_type_restriction(xsd_simple_type)
             if restriction.enumeration is not None:
                 return random.choice(restriction.enumeration)
             elif restriction.pattern is not None:
-                return self._restriction_pattern_value_generator.generate_restriction_pattern_value(restriction)
+                return self._restriction_pattern_value_generator.generate_restriction_pattern_value(
+                    element_name=element_name,
+                    restriction=restriction
+                )
             else:
                 return self._restriction_value_generator.generate_restriction_value(restriction)
 
     def _get_xml_simple_type_restriction(self, xsd_simple_type: XsdSimpleType) -> Restriction:
-        restriction: Restriction = Restriction(name=xsd_simple_type.local_name)
+        restriction: Restriction = Restriction()
         current_type: XsdSimpleType = xsd_simple_type
         while current_type.is_restriction():
             self._update_xml_simple_type_restriction_facets(restriction=restriction, xsd_simple_type=current_type)
@@ -179,7 +194,10 @@ class XmlGenerator:
         if xsd_element.type.model_group is not None:
             self._populate_xml_group_element(xml_parent_element=xml_element, xsd_group=xsd_element.type.content)
         else:
-            xml_element.text = self._generate_xml_simple_type_value(xsd_element.type.content)
+            xml_element.text = self._generate_xml_simple_type_value(
+                element_name=xsd_element.local_name,
+                xsd_simple_type=xsd_element.type.content
+            )
         attribute_name: str
         xsd_attribute: XsdAttribute
         for attribute_name, xsd_attribute in xsd_element.attributes.items():
@@ -188,7 +206,10 @@ class XmlGenerator:
             elif xsd_attribute.default is not None and self._force_default_value:
                 xml_element.attrib[attribute_name] = xsd_attribute.default
             else:
-                xml_element.attrib[attribute_name] = self._generate_xml_simple_type_value(xsd_attribute.type)
+                xml_element.attrib[attribute_name] = self._generate_xml_simple_type_value(
+                    element_name=attribute_name,
+                    xsd_simple_type=xsd_attribute.type
+                )
         return xml_element
 
     def _populate_xml_group_element(self, xml_parent_element: Element, xsd_group: XsdGroup) -> None:

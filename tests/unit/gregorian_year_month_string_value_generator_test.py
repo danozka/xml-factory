@@ -17,7 +17,6 @@ def test_generate_max_gregorian_year_month_string_value_max_inclusive(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         max_inclusive=GregorianYearMonth10(year=2023, month=5)
     )
@@ -29,7 +28,6 @@ def test_generate_max_gregorian_year_month_string_value_max_exclusive(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         max_exclusive=GregorianYearMonth10(year=2023, month=6)
     )
@@ -41,7 +39,6 @@ def test_generate_min_gregorian_year_month_string_value_min_inclusive(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         min_inclusive=GregorianYearMonth10(year=2023, month=3)
     )
@@ -53,7 +50,6 @@ def test_generate_min_gregorian_year_month_string_value_min_exclusive(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         min_exclusive=GregorianYearMonth10(year=2023, month=4)
     )
@@ -65,7 +61,6 @@ def test_generate_min_gregorian_year_month_string_value_min_exclusive_december(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         min_exclusive=GregorianYearMonth10(year=2023, month=12)
     )
@@ -77,7 +72,6 @@ def test_generate_max_gregorian_year_month_string_value_max_exclusive_january(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         max_exclusive=GregorianYearMonth10(year=2023, month=1)
     )
@@ -88,7 +82,7 @@ def test_generate_max_gregorian_year_month_string_value_max_exclusive_january(
 def test_generate_random_gregorian_year_month_string_value_no_restrictions(
     generator: GregorianYearMonthStringValueGenerator
 ) -> None:
-    restriction: Restriction = Restriction(name='gYearMonthTest', base_type=BaseType(BaseType.gregorian_year_month))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.gregorian_year_month))
     result: str = generator.generate_random_gregorian_year_month_string_value(restriction)
     parts: list[str] = result.split('-')
     year: int = int(parts[0])
@@ -102,7 +96,6 @@ def test_generate_random_gregorian_year_month_string_value_with_tz(
 ) -> None:
     tz: Timezone = Timezone(timedelta(hours=5))
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         min_inclusive=GregorianYearMonth10(year=2023, month=2, tzinfo=tz)
     )
@@ -112,7 +105,6 @@ def test_generate_random_gregorian_year_month_string_value_with_tz(
 
 def test_max_less_than_min(generator: GregorianYearMonthStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearMonthTest',
         base_type=BaseType(BaseType.gregorian_year_month),
         min_inclusive=GregorianYearMonth10(year=2023, month=8),
         max_inclusive=GregorianYearMonth10(year=2022, month=5)

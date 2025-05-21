@@ -3,39 +3,43 @@ import logging
 from logging import Logger
 from pathlib import Path
 
+from pydantic import TypeAdapter
+
+from json_patterns.domain.json_pattern import JsonPattern
 from xml_factory import IRestrictionPatternValueGenerator, Restriction
 
 
 class JsonFileRestrictionPatternValueGenerator(IRestrictionPatternValueGenerator):
+    _INDENT_SPACES: int = 2
     _log: Logger = logging.getLogger(__name__)
     _json_patterns_file_path: Path
-    _pattern_values: dict[str, str]
+    _patterns: list[JsonPattern]
     
     def __init__(self, json_patterns_file_path: Path) -> None:
         self._json_patterns_file_path = json_patterns_file_path
-        self._log.info(f'Loading \'{self._json_patterns_file_path}\' patterns file...')
         if self._json_patterns_file_path.exists():
+            self._log.info(f'Loading \'{self._json_patterns_file_path}\' patterns file...')
             with self._json_patterns_file_path.open('r') as file:
-                self._pattern_values = json.load(file)
+                self._patterns = TypeAdapter(list[JsonPattern]).validate_json(file.read())
+            self._log.info(f'Patterns file \'{self._json_patterns_file_path}\' loaded')
         else:
             self._log.info(f'Patterns file not found. Creating \'{self._json_patterns_file_path}\'...')
-            self._pattern_values = {}
+            self._patterns = []
             self._json_patterns_file_path.parent.mkdir(parents=True, exist_ok=True)
-            with self._json_patterns_file_path.open('w') as file:
-                json.dump(obj=self._pattern_values, fp=file, indent=2)
-            self._log.info(f'Patterns file \'{self._json_patterns_file_path}\' created')
-        self._log.info(f'Patterns file \'{self._json_patterns_file_path}\' loaded')
+            self._save_patterns_to_file()
+            self._log.info(f'Patterns file \'{self._json_patterns_file_path}\' created and loaded')
 
-    def generate_restriction_pattern_value(self, restriction: Restriction) -> str:
-        if restriction.pattern in self._pattern_values:
-            return self._pattern_values[restriction.pattern]
+    def generate_restriction_pattern_value(self, element_name: str, restriction: Restriction) -> str:
+        found_pattern: JsonPattern | None = self._find_pattern(restriction)
+        if found_pattern is not None:
+            return found_pattern.value
         else:
             prompt: str = (
-                f'[{restriction.name}] Input \'{restriction.base_type.name}\' type for the regular expression '
+                f'[{element_name}] Input \'{restriction.base_type.name}\' type for the regular expression '
                 f'\'{restriction.pattern}\''
             )
             if restriction.length is not None:
-                prompt += f' + [length={restriction.min_length}]'
+                prompt += f' + [length={restriction.length}]'
             if restriction.min_length is not None:
                 prompt += f' + [minLength={restriction.min_length}]'
             if restriction.max_length is not None:
@@ -54,11 +58,38 @@ class JsonFileRestrictionPatternValueGenerator(IRestrictionPatternValueGenerator
                 prompt += f' + [fractionDigits={restriction.fraction_digits}]'
             prompt += ': '
             pattern_value: str = input(prompt)
-            self._pattern_values[restriction.pattern] = pattern_value
+            self._patterns.append(
+                JsonPattern(
+                    pattern=restriction.pattern,
+                    value=pattern_value,
+                    length=restriction.length,
+                    min_length=restriction.min_length,
+                    max_length=restriction.max_length
+                )
+            )
             return pattern_value
 
     def update_patterns(self) -> None:
         self._log.debug(f'Updating \'{self._json_patterns_file_path}\' patterns file...')
-        with self._json_patterns_file_path.open('w') as file:
-            json.dump(obj=self._pattern_values, fp=file, indent=2)
+        self._save_patterns_to_file()
         self._log.info(f'Patterns file \'{self._json_patterns_file_path}\' updated')
+    
+    def _save_patterns_to_file(self) -> None:
+        with self._json_patterns_file_path.open('w') as file:
+            json.dump(
+                obj=TypeAdapter(list[JsonPattern]).dump_python(self._patterns, by_alias=True, exclude_none=True),
+                fp=file,
+                indent=self._INDENT_SPACES
+            )
+    
+    def _find_pattern(self, restriction: Restriction) -> JsonPattern | None:
+        pattern: JsonPattern
+        for pattern in self._patterns:
+            if (
+                pattern.pattern == restriction.pattern and
+                pattern.length == restriction.length and
+                pattern.min_length == restriction.min_length and
+                pattern.max_length == restriction.max_length
+            ):
+                return pattern
+        return None

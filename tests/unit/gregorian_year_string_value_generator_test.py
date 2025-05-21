@@ -15,7 +15,6 @@ def generator() -> GregorianYearStringValueGenerator:
 
 def test_generate_max_gregorian_year_string_value_max_inclusive(generator: GregorianYearStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         max_inclusive=GregorianYear10(year=2023)
     )
@@ -25,7 +24,6 @@ def test_generate_max_gregorian_year_string_value_max_inclusive(generator: Grego
 
 def test_generate_max_gregorian_year_string_value_max_exclusive(generator: GregorianYearStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         max_exclusive=GregorianYear10(year=2023)
     )
@@ -35,7 +33,6 @@ def test_generate_max_gregorian_year_string_value_max_exclusive(generator: Grego
 
 def test_generate_min_gregorian_year_string_value_min_inclusive(generator: GregorianYearStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         min_inclusive=GregorianYear10(year=1995)
     )
@@ -45,7 +42,6 @@ def test_generate_min_gregorian_year_string_value_min_inclusive(generator: Grego
 
 def test_generate_min_gregorian_year_string_value_min_exclusive(generator: GregorianYearStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         min_exclusive=GregorianYear10(year=1995)
     )
@@ -56,7 +52,7 @@ def test_generate_min_gregorian_year_string_value_min_exclusive(generator: Grego
 def test_generate_random_gregorian_year_string_value_no_restrictions(
     generator: GregorianYearStringValueGenerator
 ) -> None:
-    restriction: Restriction = Restriction(name='gYearTest', base_type=BaseType(BaseType.gregorian_year))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.gregorian_year))
     result: str = generator.generate_random_gregorian_year_string_value(restriction)
     year: int = int(result)
     assert generator.RANDOM_MIN_GREGORIAN_YEAR.year <= year <= generator.RANDOM_MAX_GREGORIAN_YEAR.year
@@ -65,7 +61,6 @@ def test_generate_random_gregorian_year_string_value_no_restrictions(
 def test_generate_random_gregorian_year_string_value_with_tz(generator: GregorianYearStringValueGenerator) -> None:
     tz: Timezone = Timezone(timedelta(hours=5))
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         min_inclusive=GregorianYear10(year=2010, tzinfo=tz)
     )
@@ -75,7 +70,6 @@ def test_generate_random_gregorian_year_string_value_with_tz(generator: Gregoria
 
 def test_max_less_than_min(generator: GregorianYearStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='gYearTest',
         base_type=BaseType(BaseType.gregorian_year),
         min_inclusive=GregorianYear10(year=2022),
         max_inclusive=GregorianYear10(year=2010)

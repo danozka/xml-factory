@@ -4,6 +4,7 @@ from xml.etree.ElementTree import Element, ElementTree
 
 import pytest
 
+from json_patterns import JsonFileRestrictionPatternValueGenerator
 from xml_factory import (
     GroupContentAtLeastOneNumberOfOccurrencesGetter,
     GroupContentMaxNumberOfOccurrencesGetter,
@@ -12,7 +13,6 @@ from xml_factory import (
     ListMaxNumberOfItemsGetter,
     ListMinNumberOfItemsGetter,
     ListRandomNumberOfItemsGetter,
-    JsonFileRestrictionPatternValueGenerator,
     RestrictionMaxValueGenerator,
     RestrictionMinValueGenerator,
     RestrictionRandomValueGenerator,

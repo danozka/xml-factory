@@ -50,7 +50,28 @@ xml-factory --help
 Generating a random value that validates a regular expression is tricky. That is why this tool will ask for your input
 whenever a pattern is required to be filled. To avoid this manual step, you can generate your own JSON library with 
 known regular expressions and the values to be used. Pass it to CLI using `--patterns-file` argument and you are ready 
-to go. Check this [example](./tests/fixtures/files/test_patterns.json) file to have an idea.
+to go. Check this [example](./tests/fixtures/files/test_patterns.json) file to have an idea. This the JSON format:
+
+```json
+[
+  {
+    "pattern": "[A-Za-z0-9_]+",
+    "value": "user123",
+    "minLength": 5,
+    "maxLength": 15
+  },
+  {
+    "pattern": "[A-Za-z0-9]*",
+    "value": "Abc123Xyz4",
+    "length": 10
+  }
+]
+```
+
+For each entry:
+- `pattern` and `value` fields are mandatory
+- `length`, `minLength` and `maxLength` fields are optional
+
 
 ## Current limitations
 - `<xsd:duration>` and `<xsd:QName>` data types not supported

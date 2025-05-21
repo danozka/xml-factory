@@ -16,7 +16,7 @@ def generator() -> DateTimeStringValueGenerator:
 
 def test_generate_max_date_time_string_value_with_max_inclusive(generator: DateTimeStringValueGenerator) -> None:
     max_dt: DateTime10 = DateTime10(year=2023, month=12, day=31, hour=13, minute=0, second=0)
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time), max_inclusive=max_dt)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time), max_inclusive=max_dt)
     result: str = generator.generate_max_date_time_string_value(restriction)
     assert result == str(max_dt)
 
@@ -24,13 +24,13 @@ def test_generate_max_date_time_string_value_with_max_inclusive(generator: DateT
 def test_generate_max_date_time_string_value_with_max_exclusive(generator: DateTimeStringValueGenerator) -> None:
     max_dt: DateTime10 = DateTime10(year=2023, month=12, day=31, hour=23, minute=59, second=59, microsecond=123456)
     expected: DateTime10 = DateTime10(year=2023, month=12, day=31, hour=23, minute=59, second=59, microsecond=123455)
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time), max_exclusive=max_dt)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time), max_exclusive=max_dt)
     result: str = generator.generate_max_date_time_string_value(restriction)
     assert result == str(expected)
 
 
 def test_generate_max_date_time_string_value_without_max_restrictions(generator: DateTimeStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time))
     mock: MagicMock
     with patch.object(
         target=generator,
@@ -44,7 +44,7 @@ def test_generate_max_date_time_string_value_without_max_restrictions(generator:
 
 def test_generate_min_date_time_string_value_with_min_inclusive(generator: DateTimeStringValueGenerator) -> None:
     min_dt: DateTime10 = DateTime10(year=2020, month=1, day=1, hour=0, minute=30, second=0)
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time), min_inclusive=min_dt)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time), min_inclusive=min_dt)
     result: str = generator.generate_min_date_time_string_value(restriction)
     assert result == str(min_dt)
 
@@ -52,13 +52,13 @@ def test_generate_min_date_time_string_value_with_min_inclusive(generator: DateT
 def test_generate_min_date_time_string_value_with_min_exclusive(generator: DateTimeStringValueGenerator) -> None:
     min_dt: DateTime10 = DateTime10(year=2020, month=1, day=1, hour=0, minute=0, second=0, microsecond=999999)
     expected: DateTime10 = DateTime10(year=2020, month=1, day=1, hour=0, minute=0, second=1, microsecond=0)
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time), min_exclusive=min_dt)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time), min_exclusive=min_dt)
     result: str = generator.generate_min_date_time_string_value(restriction)
     assert result == str(expected)
 
 
 def test_generate_min_date_time_string_value_without_min_restrictions(generator: DateTimeStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time))
     mock: MagicMock
     with patch.object(
         target=generator,
@@ -74,7 +74,6 @@ def test_generate_random_date_time_string_value_with_inclusive_bounds(generator:
     min_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=8, minute=30, second=0)
     max_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=18, minute=0, second=0)
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.date_time),
         min_inclusive=min_dt,
         max_inclusive=max_dt
@@ -88,7 +87,6 @@ def test_generate_random_date_time_string_value_with_exclusive_bounds(generator:
     min_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=8, minute=0, second=0)
     max_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=20, minute=0, second=0)
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.date_time),
         min_exclusive=min_dt,
         max_exclusive=max_dt
@@ -99,7 +97,7 @@ def test_generate_random_date_time_string_value_with_exclusive_bounds(generator:
 
 
 def test_generate_random_date_time_string_value_without_restrictions(generator: DateTimeStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time))
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time))
     result: str = generator.generate_random_date_time_string_value(restriction)
     result_dt: DateTime10 = DateTime10.fromstring(result)
     assert generator.RANDOM_MIN_DATE_TIME <= result_dt <= generator.RANDOM_MAX_DATE_TIME
@@ -111,7 +109,6 @@ def test_generate_random_date_time_string_value_with_min_greater_than_max(
     min_dt: DateTime10 = DateTime10(year=2023, month=10, day=2, hour=12, minute=0, second=0)
     max_dt: DateTime10 = DateTime10(year=2023, month=5, day=1, hour=1, minute=0, second=0)
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.date_time),
         min_inclusive=min_dt,
         max_inclusive=max_dt
@@ -123,7 +120,7 @@ def test_generate_random_date_time_string_value_with_min_greater_than_max(
 def test_generate_random_date_time_string_value_preserves_timezone(generator: DateTimeStringValueGenerator) -> None:
     tz: Timezone = Timezone(timedelta(hours=1))
     min_dt: DateTime10 = DateTime10(year=2023, month=1, day=1, hour=8, minute=0, second=0, tzinfo=tz)
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.date_time), min_inclusive=min_dt)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.date_time), min_inclusive=min_dt)
     result: str = generator.generate_random_date_time_string_value(restriction)
     result_dt: DateTime10 = DateTime10.fromstring(result)
     assert result_dt.tzinfo is not None
@@ -134,7 +131,6 @@ def test_generate_random_date_time_string_value_mixed_bounds(generator: DateTime
     min_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=7, minute=0, second=0)
     max_dt: DateTime10 = DateTime10(year=2022, month=6, day=1, hour=17, minute=0, second=0)
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.date_time),
         min_inclusive=min_dt,
         max_exclusive=max_dt

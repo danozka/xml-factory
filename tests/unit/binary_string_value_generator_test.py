@@ -22,7 +22,7 @@ def test_generate_specific_size_hex_binary_string_value(generator: BinaryStringV
 
 
 def test_generate_random_hex_binary_string_value_with_length(generator: BinaryStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.hex_binary), length=10)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.hex_binary), length=10)
     result: str = generator.generate_random_hex_binary_string_value(restriction)
     assert len(result) == restriction.length * 2
     assert all(c in '0123456789abcdef' for c in result.lower())
@@ -32,7 +32,6 @@ def test_generate_random_hex_binary_string_value_with_min_max_length(generator: 
     min_length: int = 5
     max_length: int = 10
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.hex_binary),
         min_length=min_length,
         max_length=max_length
@@ -54,7 +53,7 @@ def test_generate_specific_size_base64_binary_string_value(generator: BinaryStri
 
 
 def test_generate_random_base64_binary_string_value_with_length(generator: BinaryStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(name='test', base_type=BaseType(BaseType.hex_binary), length=12)
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.hex_binary), length=12)
     result: str = generator.generate_random_base64_binary_string_value(restriction)
     pattern: str = r'^[A-Za-z0-9+/]+={0,2}$'
     assert re.match(pattern, result)
@@ -66,7 +65,6 @@ def test_generate_random_base64_binary_string_value_with_min_max_length(generato
     min_length: int = 5
     max_length: int = 10
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.hex_binary),
         min_length=min_length,
         max_length=max_length

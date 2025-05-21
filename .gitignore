@@ -175,3 +175,7 @@ cython_debug/
 
 # Patterns
 patterns.json
+
+# Tests files
+xsd/
+result.xml

@@ -13,19 +13,13 @@ def generator() -> DecimalStringValueGenerator:
 
 
 def test_generate_max_decimal_string_value_simple(generator: DecimalStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(
-        name='test',
-        base_type=BaseType(BaseType.decimal),
-        total_digits=5,
-        fraction_digits=2
-    )
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.decimal), total_digits=5, fraction_digits=2)
     result: str = generator.generate_max_decimal_string_value(restriction)
     assert Decimal(result) == Decimal('999.99')
 
 
 def test_generate_max_decimal_string_value_with_max_inclusive(generator: DecimalStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.decimal),
         total_digits=4,
         fraction_digits=1,
@@ -37,7 +31,6 @@ def test_generate_max_decimal_string_value_with_max_inclusive(generator: Decimal
 
 def test_generate_max_decimal_string_value_with_max_exclusive(generator: DecimalStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.decimal),
         total_digits=4,
         fraction_digits=1,
@@ -48,19 +41,13 @@ def test_generate_max_decimal_string_value_with_max_exclusive(generator: Decimal
 
 
 def test_generate_min_decimal_string_value_simple(generator: DecimalStringValueGenerator) -> None:
-    restriction: Restriction = Restriction(
-        name='test',
-        base_type=BaseType(BaseType.decimal),
-        total_digits=4,
-        fraction_digits=2
-    )
+    restriction: Restriction = Restriction(base_type=BaseType(BaseType.decimal), total_digits=4, fraction_digits=2)
     result: str = generator.generate_min_decimal_string_value(restriction)
     assert Decimal(result) == Decimal('-99.99')
 
 
 def test_generate_min_decimal_string_value_with_min_inclusive(generator: DecimalStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.decimal),
         total_digits=3,
         fraction_digits=0,
@@ -72,7 +59,6 @@ def test_generate_min_decimal_string_value_with_min_inclusive(generator: Decimal
 
 def test_generate_min_decimal_string_value_with_min_exclusive(generator: DecimalStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.decimal),
         total_digits=3,
         fraction_digits=0,
@@ -84,7 +70,6 @@ def test_generate_min_decimal_string_value_with_min_exclusive(generator: Decimal
 
 def test_generate_random_decimal_string_value_range(generator: DecimalStringValueGenerator) -> None:
     restriction: Restriction = Restriction(
-        name='test',
         base_type=BaseType(BaseType.decimal),
         total_digits=4,
         fraction_digits=2,

@@ -257,6 +257,8 @@
   <xs:simpleType name="EmailType">
     <xs:restriction base="xs:string">
       <xs:pattern value="[^@]+@[^.]+..+"/>
+      <xs:minLength value="1"/>
+      <xs:maxLength value="50"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -333,6 +335,7 @@
   <xs:simpleType name="CreditCardType">
     <xs:restriction base="xs:string">
       <xs:pattern value="[0-9]{16}"/>
+      <xs:length value="16"/>
     </xs:restriction>
   </xs:simpleType>
 
