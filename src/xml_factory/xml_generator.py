@@ -7,6 +7,8 @@ from xml.etree.ElementTree import Element, ElementTree, indent
 from xmlschema.validators import (
     XMLSchema,
     XMLSchemaValidationError,
+    XsdAnyAttribute,
+    XsdAnyElement,
     XsdAttribute,
     XsdElement,
     XsdFacet,
@@ -205,17 +207,18 @@ class XmlGenerator:
                 xsd_simple_type=xsd_simple_type
             )
         attribute_name: str
-        xsd_attribute: XsdAttribute
+        xsd_attribute: XsdAttribute | XsdAnyAttribute
         for attribute_name, xsd_attribute in xsd_element.attributes.items():
-            if xsd_attribute.fixed is not None:
-                xml_element.attrib[attribute_name] = xsd_attribute.fixed
-            elif xsd_attribute.default is not None and self._force_default_value:
-                xml_element.attrib[attribute_name] = xsd_attribute.default
-            else:
-                xml_element.attrib[attribute_name] = self._generate_xml_simple_type_value(
-                    element_name=attribute_name,
-                    xsd_simple_type=xsd_attribute.type
-                )
+            if isinstance(xsd_attribute, XsdAttribute):
+                if xsd_attribute.fixed is not None:
+                    xml_element.attrib[attribute_name] = xsd_attribute.fixed
+                elif xsd_attribute.default is not None and self._force_default_value:
+                    xml_element.attrib[attribute_name] = xsd_attribute.default
+                else:
+                    xml_element.attrib[attribute_name] = self._generate_xml_simple_type_value(
+                        element_name=attribute_name,
+                        xsd_simple_type=xsd_attribute.type
+                    )
         return xml_element
 
     def _populate_xml_group_element(self, xml_parent_element: Element, xsd_group: XsdGroup) -> None:
@@ -233,13 +236,19 @@ class XmlGenerator:
         else:
             raise NotImplementedError(f'Unknown group model \'{xsd_group.model}\'')
 
-    def _handle_group_content(self, xml_parent_element: Element, group_content: XsdElement | XsdGroup) -> None:
+    def _handle_group_content(
+        self,
+        xml_parent_element: Element,
+        group_content: XsdElement | XsdAnyElement | XsdGroup
+    ) -> None:
         number_of_occurrences: int = (
             self._group_content_number_of_occurrences_getter.get_group_content_number_of_occurrences(group_content)
         )
         for _ in range(number_of_occurrences):
             if isinstance(group_content, XsdElement):
                 xml_parent_element.append(self._generate_xml_element(group_content))
+            elif isinstance(group_content, XsdAnyElement):
+                pass
             elif isinstance(group_content, XsdGroup):
                 self._populate_xml_group_element(xml_parent_element=xml_parent_element, xsd_group=group_content)
             else:

@@ -73,5 +73,5 @@ For each entry:
 - `length`, `minLength` and `maxLength` fields are optional
 
 
-## Current limitations
+## Current known limitations
 - `<xsd:duration>` and `<xsd:QName>` data types not supported
