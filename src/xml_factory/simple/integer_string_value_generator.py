@@ -35,7 +35,7 @@ class IntegerStringValueGenerator:
             max_integer = min(max_integer, max_for_digits)
         if min_integer > max_integer:
             return str(max_integer)
-        return str(random.randint(a=max_integer, b=max_integer))
+        return str(random.randint(a=min_integer, b=max_integer))
 
     def _get_effective_min_integer(self, restriction: Restriction) -> int:
         min_inclusive: int | None = restriction.min_inclusive
