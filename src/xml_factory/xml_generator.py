@@ -184,7 +184,7 @@ class XmlGenerator:
                     restriction.min_length = facet.value
             elif isinstance(facet, XsdPatternFacets):
                 if restriction.pattern is None:
-                    restriction.pattern = facet.regexps[0]
+                    restriction.pattern = random.choice(facet.regexps)
             elif isinstance(facet, XsdTotalDigitsFacet):
                 if restriction.total_digits is None:
                     restriction.total_digits = facet.value
