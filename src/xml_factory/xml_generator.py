@@ -192,11 +192,17 @@ class XmlGenerator:
     def _generate_xml_complex_type_element(self, xsd_element: XsdElement) -> Element:
         xml_element: Element = Element(xsd_element.local_name)
         if xsd_element.type.model_group is not None:
-            self._populate_xml_group_element(xml_parent_element=xml_element, xsd_group=xsd_element.type.content)
+            xsd_group: XsdGroup = xsd_element.type.content
+            number_of_occurrences: int = (
+                self._group_content_number_of_occurrences_getter.get_group_content_number_of_occurrences(xsd_group)
+            )
+            for _ in range(number_of_occurrences):
+                self._populate_xml_group_element(xml_parent_element=xml_element, xsd_group=xsd_group)
         else:
+            xsd_simple_type: XsdSimpleType = xsd_element.type.content
             xml_element.text = self._generate_xml_simple_type_value(
                 element_name=xsd_element.local_name,
-                xsd_simple_type=xsd_element.type.content
+                xsd_simple_type=xsd_simple_type
             )
         attribute_name: str
         xsd_attribute: XsdAttribute
